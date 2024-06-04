@@ -1,0 +1,14 @@
+SELECT * FROM automaticos WHERE sala = '31' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM automaticos WHERE sala = '3'
+
+SELECT * FROM tesorerias WHERE recibe='323' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM adicionals WHERE tesoreria_mov_id > '169.900' ORDER BY id DESC LIMIT 100
+
+
+SELECT * FROM rendicion_tipos WHERE sala LIKE '14' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM rendicion_tipos WHERE rendicion =  '12962'
+
+SELECT * FROM tesoreria_tipos WHERE 1

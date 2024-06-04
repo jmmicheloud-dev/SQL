@@ -1,0 +1,34 @@
+SELECT * FROM cajas WHERE sala = '26' ORDER BY id DESC limit 10
+
+SELECT * FROM cajas WHERE 1  LIMIT 200
+
+SELECT * FROM adicionals WHERE tesoreria_mov_id > '175600'  ORDER BY id DESC LIMIT 200
+
+SELECT	* FROM activos WHERE sala ='9'
+
+SELECT * FROM tesoreria_movs WHERE sala = '14' ORDER BY id DESC LIMIT 100
+
+SELECT * FROM mon_exes WHERE salla = '31' LIMIT 100
+
+SELECT * FROM adicionals WHERE tesoreria_mov_id > '181700' ORDER BY id desc
+
+SELECT * FROM tesoreria_movs WHERE sala = '29' ORDER BY id DESC LIMIT 100
+
+
+SELECT * FROM users WHERE id = '379'
+
+
+SELECT * FROM salas WHERE 1
+SELECT * FROM cajas WHERE sala = '26' ORDER BY id DESC limit 10
+
+SELECT * FROM cajas WHERE 1  LIMIT 200
+
+SELECT * FROM adicionals WHERE tesoreria_mov_id > '175600'  ORDER BY id DESC LIMIT 200
+
+SELECT	* FROM activos WHERE sala ='9'
+
+SELECT * FROM tesoreria_movs WHERE sala = '14' ORDER BY id DESC LIMIT 100
+
+SELECT * FROM mon_exes WHERE salla = '31' LIMIT 100
+
+SELECT * FROM adicionals WHERE tesoreria_mov_id > '181700' ORDER BY id desc

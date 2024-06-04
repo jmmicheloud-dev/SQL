@@ -1,0 +1,44 @@
+SELECT * FROM salas WHERE 1
+
+SELECT * FROM users WHERE id = '224'
+
+SELECT * FROM users WHERE sala LIKE '%3%'
+
+SELECT * FROM users WHERE username like '%cata%'
+
+SELECT * FROM activos WHERE sala ='34'
+
+SELECT * FROM tesoreria_tipos WHERE 1 
+
+SELECT * FROM tesorerias WHERE 1 ORDER BY id DESC LIMIT 10
+
+SELECT * FROM tesorerias WHERE sala = '2' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM tesorerias WHERE sala = '26' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM tesoreria_movs WHERE sala = '26' ORDER BY id DESC LIMIT 100
+
+SELECT * FROM rendicions WHERE sala LIKE '26' ORDER BY id DESC LIMIT 50
+
+SELECT * FROM rendicion_tipos WHERE sala LIKE '3' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM adicionals WHERE tesoreria_mov_id > '1934918' ORDER BY id DESC LIMIT 100
+
+SELECT * FROM cajas WHERE sala = '30' ORDER BY id DESC limit 10
+
+SELECT * FROM automaticos WHERE sala = '31' ORDER BY id DESC LIMIT 10
+
+SELECT * FROM tes_admins WHERE sala LIKE  '%23%' ORDER BY id DESC
+
+SELECT * FROM tes_admin_movs WHERE sala LIKE  '%23%' ORDER BY id DESC
+
+
+WHERE 1 recibe = '149' ORDER BY id desc
+
+SELECT * FROM tes_admin_movs WHERE /*sala = '15' 
+AND */ tes_admin_movs.monto = '711900'
+
+ORDER BY id desc 
+
+AND tes_admin_movs.tesoreria_tipo_id = '37'
+
