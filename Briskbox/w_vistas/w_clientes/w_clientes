@@ -18,12 +18,15 @@ select
     ,`trainees`.`last_consumption` AS `Fecha_de_última_clase`
     ,`ta`.`description` AS `última_acción` 
 from 
-    ((
-       (
-        (`trainees` join `boxes` on(`trainees`.`box_id` = `boxes`.`id`)) join `users_profiles` on (`users_profiles`.`trainee_id` = `trainees`.`id`)) 
+    (
+     (
+        (
+         (`trainees` join `boxes` on(`trainees`.`box_id` = `boxes`.`id`)) 
+         join `users_profiles` on (`users_profiles`.`trainee_id` = `trainees`.`id`)
+        ) 
         join `users` on (`users_profiles`.`user_id` = `users`.`id`)
      ) 
-    left join (
+     left join (
                 select `ta`.`id` AS `id`
                         ,`ta`.`datetime` AS `datetime`
                         ,`ta`.`trainee_id` AS `trainee_id`
