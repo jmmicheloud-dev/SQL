@@ -1,0 +1,46 @@
+select 
+    `boxes`.`name` AS `Box`
+    ,`trainees`.`name` AS `Alumno`
+    ,`trainees`.`credits` AS `Cantidad_de_creditos`
+    ,`trainees`.`class_count` AS `Cantidad_de_clases`
+    ,`users`.`email` AS `Email`
+    ,`users`.`dni` AS `DNI`
+    ,`users`.`cellular` AS `Celular`
+    ,`users`.`sex` AS `Sexo`
+    ,`users`.`birthday` AS `Fecha_Nacimiento`
+    ,`users`.`adress` AS `Direccion`
+    ,`users`.`neighborhood` AS `Barrio`
+    ,`users`.`city` AS `Ciudad`
+    ,`trainees`.`created` AS `Fecha_de_alta_en_el_sistema`
+    ,`trainees`.`medic_form_expiration_date` AS `Fecha_de_Ficha_Médica`
+    ,`trainees`.`last_purchase` AS `Fecha_de_último_consumo`
+    ,`trainees`.`last_action` AS `Fecha_de_última_acción`
+    ,`trainees`.`last_consumption` AS `Fecha_de_última_clase`
+    ,`ta`.`description` AS `última_acción` 
+from 
+    ((
+       (
+        (`trainees` join `boxes` on(`trainees`.`box_id` = `boxes`.`id`)) join `users_profiles` on (`users_profiles`.`trainee_id` = `trainees`.`id`)) 
+        join `users` on (`users_profiles`.`user_id` = `users`.`id`)
+     ) 
+    left join (
+                select `ta`.`id` AS `id`
+                        ,`ta`.`datetime` AS `datetime`
+                        ,`ta`.`trainee_id` AS `trainee_id`
+                        ,`ta`.`action_id` AS `action_id`
+                        ,`ta`.`user_id` AS `user_id`
+                        ,`ta`.`box_id` AS `box_id`
+                        ,`ta`.`trainee_action_id` AS `trainee_action_id`
+                        ,`ta`.`scheduled_datetime` AS `scheduled_datetime`
+                        ,`ta`.`type` AS `type`
+                        ,`ta`.`result` AS `result`
+                        ,`ta`.`description` AS `description`
+                        ,`ta`.`status` AS `status`
+                        ,`ta`.`created` AS `created`
+                        ,`ta`.`modified` AS `modified` 
+                from `trainees_actions` `ta` 
+                group by `ta`.`trainee_id` 
+                order by `ta`.`datetime` desc
+              ) `ta` on (`ta`.`trainee_id` = `trainees`.`id`)
+    ) 
+where `trainees`.`status` = 'ACTIVE'

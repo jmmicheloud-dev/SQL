@@ -1,0 +1,29 @@
+create or replace table v_alumnos as
+SELECT boxes.name AS Box,
+trainees.name AS Alumno,
+trainees.credits AS Cantidad_de_creditos,
+trainees.class_count AS "Cantidad_de_clases",
+users.email AS Email,
+users.dni AS DNI,
+users.cellular AS Celular,
+users.sex AS Sexo,
+users.birthday AS "Fecha_Nacimiento",
+users.adress AS Direccion,
+users.neighborhood AS Barrio,
+users.city AS Ciudad,
+trainees.created AS "Fecha_de_alta_en_el_sistema",
+trainees.medic_form_expiration_date AS "Fecha_de_Ficha_Médica",
+trainees.last_purchase AS "Fecha_de_último_consumo",
+trainees.last_action AS "Fecha_de_última_acción",
+trainees.last_consumption AS "Fecha_de_última_clase",
+ta.description AS "última_acción"
+ FROM trainees
+ INNER JOIN boxes ON trainees.box_id = boxes.id
+ INNER JOIN users_profiles ON users_profiles.trainee_id = trainees.id
+ INNER JOIN users ON users_profiles.user_id = users.id
+ left JOIN (
+ 		SELECT * from trainees_actions ta 
+		 GROUP BY ta.trainee_id 
+		 ORDER BY ta.datetime DESC 
+		 ) ta ON ta.trainee_id=trainees.id	 
+  WHERE trainees.`status` = 'ACTIVE'
