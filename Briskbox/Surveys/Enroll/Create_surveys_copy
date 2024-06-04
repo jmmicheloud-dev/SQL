@@ -1,0 +1,46 @@
+
+INSERT INTO users_surveys_copy 
+SELECT 
+	GenerateUUID() as id,
+	u.id AS user_id,
+	'2ea5a8e4-0e41-4b6b-88d3-6dbe7c1b529a' AS surver_id,
+	null AS trainee_clase_id,
+	'2024-06-05 07:00:00' AS datetime,
+	null AS value,
+	'PENDING' AS status,
+	'2024-06-05 07:00:00' as created,
+	'2024-06-05 07:00:00' as modified
+FROM 
+	(SELECT * FROM users WHERE id IN 
+		('77fff555-6055-4476-9a9a-1a7ea5cab360',
+		'e149b747-fac8-4c4f-a5a6-2a83b5726ecb',
+		'3211f0f6-2f30-49b1-a22b-bfaca7692b6e',
+		'5d23b4c7-041d-448b-9bf2-15752f49f8cb',
+		'bfd2a75a-3325-4a31-927c-f80226dded15',
+		'f6bbbd60-c894-4db3-b883-8915091d4d52',
+		'3b8d1586-ead2-4185-94ee-b44a362535a3',
+		'd64f73b2-8629-473a-89c1-89aad00f04fa',
+		'24c635bd-d10a-409f-8e03-3fbf4591a92a',
+		'c29abef7-7ba7-4a71-8d17-c5abe67cf016',
+		'564a874f-0c9e-4e85-a844-78e45565b273',
+		'd64f7bb1-85d3-48f8-8da6-6f86c3a843b0',
+		'748925aa-8935-45b9-ba7b-c70d0bc5b96c',
+		'b655cb1b-6384-4628-85a9-21277a988f13',
+		'f9b1e43c-c25a-48d9-bb47-6db0128af3a1',
+		'76714f88-be83-4634-95a9-34d3ad902a19',
+		'0fb96bf5-4aa4-4069-b84f-a75fe61cfb67',
+		'71a42b76-ddb2-4793-8272-8f5f526f4646',
+		'b388414e-30e1-4db6-8aca-82eae9c463ec',
+		'98fde8ba-a3de-4833-91d1-e2b26dd9ef33',
+		'b15b0989-cac3-49b6-9c0c-a94046841bf5',
+		'2e915222-1b78-446e-bea2-6e0977f3b8ef',
+		'07191669-3e58-4d26-bc5f-33421ad9f425',
+		'cbc314e4-3ce3-42df-802a-4be65028004e',
+		'08f1838a-d4bd-4e94-8003-354a8b4bc73b',
+		'9394ae1d-2799-4f58-875e-946022feb4b8',
+		'2b0c902a-beab-4584-b94a-0302de3ccac5',
+		'039da27e-bd72-463b-b168-e7e6afcaa2de',
+		'bfd2a75a-3325-4a31-927c-f80226dded15')
+		) AS u
+WHERE 1;
+
