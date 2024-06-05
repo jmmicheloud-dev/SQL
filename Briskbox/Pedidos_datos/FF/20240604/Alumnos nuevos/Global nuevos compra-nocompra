@@ -1,0 +1,38 @@
+/* alumno nuevo no compro dentro de los 30d */
+SELECT COUNT(1), Q.bname FROM 
+(SELECT  up.trainee_id, b.name AS bname, up.user_id ,trn.box_id, trn.credits, trn.class_count ,u.*
+FROM users  u, users_profiles up , trainees trn, boxes b
+WHERE u.created > '2024-05-04 00:00:00'
+AND u.id = up.user_id
+AND up.trainee_id=trn.id
+AND trn.box_id=b.id) AS Q
+WHERE Q.credits = '0'
+GROUP BY Q.box_id
+
+/* alumno nuevo compro dentro de los 30d */
+SELECT COUNT(1), Q.bname FROM 
+(SELECT  up.trainee_id, b.name AS bname, up.user_id ,trn.box_id, trn.credits, trn.class_count ,u.*
+FROM users  u, users_profiles up , trainees trn, boxes b
+WHERE u.created > '2024-05-04 00:00:00'
+AND u.id = up.user_id
+AND up.trainee_id=trn.id
+AND trn.box_id=b.id) AS Q
+WHERE Q.credits > '0'
+GROUP BY Q.box_id
+
+
+	compro ult30d	nocompro ult30d	bname
+139	113	26	San Carlos
+54	8	46	Fun Argūello
+61	33	28	Nueva Cordoba
+37	16	21	Barrio Jardín
+31	23	8	Cerro
+72	43	29	Warcalde
+41	25	16	Villa Anita
+35	14	21	Villa Allende
+53	36	17	Valle Escondido
+49	21	28	Argūello
+65	37	28	Nueva Cordoba Chacabuco 
+637	369	268	637
+
+
