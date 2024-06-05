@@ -1,0 +1,9 @@
+
+SELECT (
+(select COUNT(1) AS f FROM users_surveys AS f WHERE f.value > '0' )
+/
+(SELECT COUNT(1) AS base FROM users_surveys us)  
+) as cumplido, (select COUNT(1) AS f FROM users_surveys AS f WHERE f.value > '0' ) AS hecho , (SELECT COUNT(1) AS base FROM users_surveys us) AS total
+
+"cumplido"	"hecho"	"total"
+"0,4375"	"14"	"32"
