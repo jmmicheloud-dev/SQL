@@ -1,0 +1,49 @@
+-- 1
+-- simple sum()
+
+select sum(amount) from int_orders;
+
+"sum(amount)"
+"6670"
+
+-- group by sum()
+select salesperson_id, sum(amount) from int_orders
+GROUP BY salesperson_id;
+
+"salesperson_id"	"sum(amount)"
+"1"	"460"
+"2"	"2940"
+"7"	"1470"
+"8"	"1800"
+
+
+-- windows function  "same value column"
+
+select salesperson_id, order_number,order_date,amount
+, sum(amount) over() 
+from int_orders
+
+"salesperson_id"	"order_number"	"order_date"	"amount"	"sum(amount) over()"
+"7"	"70"	"1998-05-06"	"150"	"6670"
+"1"	"30"	"1995-07-14"	"460"	"6670"
+"2"	"10"	"1996-08-02"	"540"	"6670"
+"7"	"50"	"1998-02-03"	"600"	"6670"
+"7"	"60"	"1998-03-02"	"720"	"6670"
+"8"	"20"	"1999-01-30"	"1800"	"6670"
+"2"	"40"	"1998-01-29"	"2400"	"6670"
+
+
+-- windows function partition over... "salesperson_id value column"
+
+select salesperson_id, order_number,order_date,amount
+, sum(amount) over(partition by salesperson_id) 
+from int_orders
+
+"salesperson_id"	"order_number"	"order_date"	"amount"	"sum(amount) over(partition by salesperson_id)"
+"1"	"30"	"1995-07-14"	"460"	"460"
+"2"	"10"	"1996-08-02"	"540"	"2940"
+"2"	"40"	"1998-01-29"	"2400"	"2940"
+"7"	"50"	"1998-02-03"	"600"	"1470"
+"7"	"60"	"1998-03-02"	"720"	"1470"
+"7"	"70"	"1998-05-06"	"150"	"1470"
+"8"	"20"	"1999-01-30"	"1800"	"1800"

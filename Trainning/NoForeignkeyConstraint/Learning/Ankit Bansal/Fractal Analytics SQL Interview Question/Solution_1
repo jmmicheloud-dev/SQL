@@ -1,0 +1,134 @@
+-- 
+
+-- 1
+SELECT attacker_king, region 
+FROM battle
+WHERE attacker_outcome=1
+
+"attacker_king"	"region"
+"1"	"The North"
+"1"	"The Reach"
+"1"	"The Riverlands"
+"3"	"The Riverlands"
+
+-- 2
+
+
+SELECT attacker_king, region 
+FROM battle
+WHERE attacker_outcome=1
+UNION ALL 
+SELECT defender_king, region 
+FROM battle
+WHERE attacker_outcome=0
+
+
+"attacker_king"	"region"
+"1"	"The North"
+"1"	"The Reach"
+"1"	"The Riverlands"
+"3"	"The Riverlands"
+"4"	"The North"
+"6"	"The Reach"
+"1"	"The North"
+"3"	"The Riverlands"
+
+-- 3
+
+WITH wins AS(
+SELECT attacker_king AS king, region
+FROM battle
+WHERE attacker_outcome = 1
+UNION ALL 
+SELECT defender_king, region
+FROM battle 
+WHERE attacker_outcome = 0
+)
+SELECT *
+FROM wins
+
+"king"	"region"
+"1"	"The North"
+"1"	"The Reach"
+"1"	"The Riverlands"
+"3"	"The Riverlands"
+"4"	"The North"
+"6"	"The Reach"
+"1"	"The North"
+"3"	"The Riverlands"
+ 
+-- 4 
+WITH wins AS(
+SELECT attacker_king AS king, region
+FROM battle
+WHERE attacker_outcome = 1
+UNION ALL 
+SELECT defender_king, region
+FROM battle 
+WHERE attacker_outcome = 0
+)
+SELECT *
+FROM wins w
+INNER JOIN king k ON w.king=k.k_no
+GROUP BY	w.region, k.house
+ORDER BY	w.region, k.house
+
+"king"	"region"	"k_no"	"king"	"house"
+"4"	"The North"	"4"	"Balon Greyjoy"	"House Greyjoy"
+"1"	"The North"	"1"	"Robb Stark"	"House Stark"
+"6"	"The Reach"	"6"	"Doran Martell"	"House Martell"
+"1"	"The Reach"	"1"	"Robb Stark"	"House Stark"
+"3"	"The Riverlands"	"3"	"Stannis Baratheon"	"House Baratheon"
+"1"	"The Riverlands"	"1"	"Robb Stark"	"House Stark"
+
+-- 5
+WITH wins AS(
+SELECT attacker_king AS king, region
+FROM battle
+WHERE attacker_outcome = 1
+UNION ALL 
+SELECT defender_king, region
+FROM battle 
+WHERE attacker_outcome = 0
+)
+SELECT w.region, k.house, COUNT(*) AS no_of_wins
+,RANK() over(PARTITION BY w.region ORDER BY COUNT(*) desc) AS rn
+FROM wins w
+INNER JOIN king k ON w.king=k.k_no
+GROUP BY	w.region, k.house
+
+"region"	"house"	"no_of_wins"	"rn"
+"The North"	"House Greyjoy"	"1"	"2"
+"The North"	"House Stark"	"2"	"1"
+"The Reach"	"House Martell"	"1"	"1"
+"The Reach"	"House Stark"	"1"	"1"
+"The Riverlands"	"House Baratheon"	"2"	"1"
+"The Riverlands"	"House Stark"	"1"	"2"
+
+-- 6
+WITH wins AS(
+SELECT attacker_king AS king, region
+FROM battle
+WHERE attacker_outcome = 1
+UNION ALL 
+SELECT defender_king, region
+FROM battle 
+WHERE attacker_outcome = 0
+)
+SELECT * FROM (
+SELECT w.region, k.house, COUNT(*) AS no_of_wins
+,RANK() over(PARTITION BY w.region ORDER BY COUNT(*) desc) AS rn
+FROM wins w
+INNER JOIN king k ON w.king=k.k_no
+GROUP BY	w.region, k.house
+) A
+WHERE rn=1
+
+
+"region"	"house"	"no_of_wins"	"rn"
+"The North"	"House Stark"	"2"	"1"
+"The Reach"	"House Martell"	"1"	"1"
+"The Reach"	"House Stark"	"1"	"1"
+"The Riverlands"	"House Baratheon"	"2"	"1"
+
+
