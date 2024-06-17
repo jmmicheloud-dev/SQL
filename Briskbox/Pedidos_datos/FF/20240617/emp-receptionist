@@ -1,0 +1,16 @@
+--
+
+SELECT u.name
+, u.login
+, b.name
+, up.`type` 
+FROM users u
+, users_profiles up
+,boxes b
+WHERE up.type = 'RECEPTIONIST'
+AND up.user_id = u.id
+AND u.id IN (
+SELECT e.id from employees e 
+WHERE e.`type` = 'EMPLOYEE'
+)
+AND b.id = up.box_id

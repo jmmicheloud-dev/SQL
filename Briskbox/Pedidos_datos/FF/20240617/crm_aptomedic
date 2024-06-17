@@ -1,0 +1,40 @@
+-- crm pendiente de pago
+
+SELECT t.trainee_id, t.name, t.datetime
+FROM transactions t
+WHERE transaction_type_id IN ('8e0c6586-3090-4c13-b6dd-4abddc559946', 'c1d3d5e5-2dac-49fc-87f5-8093196f6aa8') -- Reemplaza 1 y 2 con los IDs correctos
+  AND status = 'PENDING'
+  AND datetime >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+ORDER BY trainee_id;
+
+
+-- Incripcion alumno < 30 dias 
+SELECT * FROM trainees t
+WHERE t.created > '2024-06-01'
+
+
+SELECT t.name
+, DATE_FORMAT(t.created  , '%Y %M %d') AS dia
+, t.medic_form 
+, tc.date
+, tc.box_id
+, tc.`status`
+, clt.name
+FROM trainees t
+INNER JOIN trainees_clases tc ON tc.trainee_id=t.id
+INNER JOIN clases c ON c.id = tc.clase_id
+INNER JOIN clases_types clt ON clt.id=c.clase_type_id
+WHERE t.id = '00431ab8-ba0e-477d-aa65-b3c745b0914f'
+
+-- María Cecilia Almaraz
+"alumno"	"fecha"	"apto_med"	"date"	"box"	"status"	"clase"
+"María Cecilia Almaraz"	"2024 June 13"		"2024-06-17"	"Fun Argūello"	"UNINSCRIBED"	"HIIT"
+"María Cecilia Almaraz"	"2024 June 13"		"2024-06-17"	"Fun Argūello"	"UNINSCRIBED"	"HIIT"
+"María Cecilia Almaraz"	"2024 June 13"		"2024-06-18"	"Fun Argūello"	"INSCRIBED"	"FUNcional"
+
+-- 
+, DATE_FORMAT(t.created  , '%Y-%m-%d') AS fecha
+2024-06-13
+--
+, DATE_FORMAT(t.created  , '%y-%m-%d') AS fecha
+24-06-13
