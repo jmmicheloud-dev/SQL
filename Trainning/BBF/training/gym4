@@ -1,0 +1,24 @@
+-- Creación de función "cantidad_alumnos"
+delimiter $$
+create function `cantidad_alumnos` (min_clase int,max_clase int) 
+returns int
+deterministic
+begin
+	declare resultado int;
+	set resultado = (select count(trainee_id) from clases_clientes where cantidad_de_clases between min_clase and max_clase);
+	return resultado;
+end $$
+delimiter ;
+
+-- Creación de función "last_transaction"
+drop function `last_transaction`;
+delimiter $$
+create function `last_transaction` (ID int) 
+returns date
+deterministic
+begin
+	declare resultado date;
+	set resultado = (select date_time from transactions where trainee_id = ID order by date_time desc limit 1);
+	return resultado;
+end $$
+delimiter ;

@@ -1,0 +1,95 @@
+
+-- Creación de la vista "antiguedad_clientes"
+create view antiguedad_clientes as 
+select 
+	trainees.name, 
+	user.fecha_alta_sistema 
+from trainees
+left join user
+on trainees.user_id = user.user_id
+left join trainees_clases
+on trainees.trainee_id = trainees_clases.trainee_id
+order by user.fecha_alta_sistema;
+
+
+
+-- Creación de la vista "clases_clientes"
+create view clases_clientes as 
+select 
+	trainees_clases.trainee_id,
+    trainees.name,
+    count(trainees_clases.status) as cantidad_de_clases
+from trainees_clases
+left join trainees
+on trainees_clases.trainee_id=trainees.trainee_id
+where status = "Present"
+group by trainee_id
+order by cantidad_de_clases desc;
+
+
+
+-- Creación de la vista "antiguedad_clases_clientes"
+create view antiguedad_clases_clientes as 
+select 
+	tabla1.name, 
+    tabla1.fecha_alta_sistema, 
+    tabla2.cantidad_de_clases 
+    from
+(select trainees.trainee_id, trainees.name , user.fecha_alta_sistema 
+from trainees
+left join user
+on trainees.user_id = user.user_id
+left join trainees_clases
+on trainees.trainee_id = trainees_clases.trainee_id
+order by user.fecha_alta_sistema) as tabla1
+
+left join
+
+(select trainee_id,count(status) as cantidad_de_clases
+from trainees_clases
+where status = "Present"
+group by trainee_id
+order by cantidad_de_clases desc) as tabla2
+
+on tabla1.trainee_id=tabla2.trainee_id
+group by tabla1.trainee_id
+order by fecha_alta_sistema asc;
+
+
+
+-- Creación de la vista "marketing" para el área de marketing y ventas
+create view marketing as 
+select 
+	concat(first_name," ",last_name) as name,
+    left((-1) * datediff(birthday,current_date)/365,2) as edad,
+    province 
+    from user;
+
+
+    
+-- Creación de la vista "rrhh"
+create view rrhh as 
+select 
+	coaches.coach_id,
+	coaches.name,
+    count(coaches_clases.clases_id) as horas_laborales,
+    coaches.title
+from coaches_clases
+left join coaches
+on coaches_clases.coach_id=coaches.coach_id
+left join clases
+on coaches_clases.coaches_clases_id=clases.clases_id
+where clases.day between "2024-02-01" and "2024-02-29"
+group by coach_id
+order by horas_laborales desc;
+
+
+
+-- Creacion de la vista presentismo
+create view presentismo as 
+select 
+	status as estado,
+    count(trainee_id) as cantidad,
+    count(trainee_id)/(select count(trainee_id) from trainees_clases)*100 as porcentaje
+from trainees_clases
+group by status;

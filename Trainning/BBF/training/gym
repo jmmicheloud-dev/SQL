@@ -1,0 +1,133 @@
+CREATE DATABASE gym;
+
+-- Uso de la DB
+use gym;
+
+-- Creación de la tabla user
+create table if not exists user(
+	user_id int not null auto_increment,
+    first_name varchar(20) not null,
+    last_name varchar(20) not null,
+    email varchar(30) not null,
+    celular int not null, -- Campo no obligatorio a la hora de crearse un usuario
+    phone int, -- Campo no obligatorio a la hora de crearse un usuario
+    adress varchar(30), -- Campo no obligatorio a la hora de crearse un usuario
+    neighborhood varchar(30), -- Campo no obligatorio a la hora de crearse un usuario
+    city varchar (20), -- Campo no obligatorio a la hora de crearse un usuario
+    province varchar (20), -- Campo no obligatorio a la hora de crearse un usuario
+    dni int not null,
+    sex varchar (9), -- El género puede ser Masculino, Femenino u Otro. Masculino (que es la palabra mas larga de las 3, tiene 9 letras).
+    birthday date not null,
+    fecha_alta_sistema date not null,
+    primary key (user_id)
+    );
+
+-- Creación de la tabla credit_types
+create table if not exists credit_types(
+	credit_types_id int not null auto_increment,
+    name varchar(40) not null,
+    status varchar(8), -- Indica si esta activo o inactivo el tipo de plan: ACTIVE o INACTIVE
+    primary key (credit_types_id)
+    );
+
+-- Creación de la tabla trainees
+create table if not exists trainees(
+	trainee_id int not null auto_increment,
+    name varchar(25) not null,
+    user_id int not null,
+    credit_type_id int not null,
+    primary key (trainee_id),
+    foreign key (user_id) references user(user_id),
+    foreign key (credit_type_id) references credit_types(credit_types_id)
+    );
+
+-- Creación de la tabla boxes
+create table if not exists boxes (
+	box_id int not null auto_increment,
+    name varchar(25) not null,
+    adress varchar(50),
+    city varchar(25),
+    phone varchar(10),    
+    primary key (box_id)
+    );
+
+-- Creación de la tabla clases_types
+create table if not exists clases_types(
+	clase_type_id int not null auto_increment,
+    name varchar(15) not null,
+    status varchar(8) not null, -- Este campo puede ser ACTIVE o INACTIVE
+    primary key (clase_type_id)
+    );
+
+-- Creación de la tabla clases
+create table if not exists clases(
+	clases_id int not null auto_increment,
+	box_id int not null,
+	clase_type_id int not null,
+	day int not null, 
+	time time not null,
+	status varchar(8) not null, -- El estado puede ser ACTIVE o INACTIVE. INACTIVE tiene 8 letras
+    primary key (clases_id),
+    foreign key (box_id) references boxes(box_id),
+    foreign key (clase_type_id) references clases_types(clase_type_id)
+    );
+
+-- Creación de la tabla payments
+create table if not exists payments(
+	payment_id int not null auto_increment,
+	name varchar(20) not null,
+	status varchar(8) not null, -- Indica si esta activa o inactiva la forma de pago: ACTIVE o INACTIVE
+	primary key (payment_id)
+	);
+
+-- Creación de la tabla payment_credit_types
+create table if not exists payment_credit_types(
+	payment_credit_types_id int not null auto_increment,
+    payment_id int not null,
+    credit_types_id int not null,
+    primary key (payment_credit_types_id),
+    foreign key (payment_id) references payments(payment_id),
+    foreign key (credit_types_id) references credit_types(credit_types_id)
+    );
+    
+-- Creación de la tabla transactions
+create table if not exists transactions(
+	transactions_id int not null auto_increment,
+    box_id int not null,
+    trainee_id int not null,
+    date_time date not null,
+    transactions_type varchar(30) not null,
+    primary key (transactions_id),
+    foreign key (box_id) references boxes(box_id),
+    foreign key (trainee_id) references trainees(trainee_id)
+    );
+    
+-- Creación de la tabla trainees_clases
+create table if not exists trainees_clases(
+    trainee_clases_id int not null auto_increment,
+    trainee_id int not null,
+    box_id int not null,
+    clases_id int not null,
+    status varchar(10) not null, -- Este campo puede ser: PRESENT, ABSENT, UNSUSCRIBE, INSCRIPT
+    primary key (trainee_clases_id),
+    foreign key (trainee_id) references trainees(trainee_id),
+    foreign key (clases_id) references clases(clases_id)
+    );
+    
+-- Creación de la tabla coaches
+create table if not exists coaches(
+	coach_id int not null auto_increment,
+    name varchar(30) not null,
+    title varchar(2) not null, -- Indica si el profesor en cuestión tiene título o no: es decir, "si" o "no"
+    primary key (coach_id)
+    );
+    
+-- Creación de tabla coaches_clases
+create table if not exists coaches_clases(
+	coaches_clases_id int not null auto_increment,
+    coach_id int not null,
+    clases_id int not null,
+    primary key (coaches_clases_id),
+    foreign key (coach_id) references coaches(coach_id),
+    foreign key (clases_id) references clases(clases_id)
+    );

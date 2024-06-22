@@ -1,0 +1,52 @@
+
+--  Creación Trigger "facturas_a"
+create table if not exists facturas_a(
+	transactions_id int not null,
+    box_id int not null,
+    trainee_id int not null,
+    date_time date not null,
+    type varchar(30) not null
+    );
+
+DELIMITER $$
+create trigger facturas_a
+after insert on transactions
+FOR EACH ROW
+begin
+	if new.type = "Venta Responsable Inscripto"
+    then insert into facturas_a (transactions_id,box_id,trainee_id,date_time,type) value (new.transactions_id,new.box_id,new.trainee_id,new.date_time,new.type);
+    end if;
+end $$
+DELIMITER ;
+
+
+
+-- Creación Trigger "menores_edad"
+create table if not exists menores_edad(
+	user_id int not null,
+    first_name varchar(20) not null,
+    last_name varchar(20) not null,
+    email varchar(30) not null,
+    celular int not null,
+    phone int, 
+    adress varchar(30), 
+    neighborhood varchar(30), 
+    city varchar (20), 
+    province varchar (20), 
+    dni int not null,
+    sex varchar (9),
+    birthday date not null,
+    fecha_alta_sistema date not null
+    );
+
+DELIMITER $$
+create trigger menores_edad
+after insert on user
+FOR EACH ROW
+begin
+	if (left((-1) * datediff(new.birthday,(select current_date()))/365,2)) < 18
+    then insert into menores_edad (user_id,first_name,last_name,email,celular,phone,adress,neighborhood,city,province,dni,sex,birthday,fecha_alta_sistema)
+									value (new.user_id,new.first_name,new.last_name,new.email,new.celular,new.phone,new.adress,new.neighborhood,new.city,new.province,new.dni,new.sex,new.birthday,new.fecha_alta_sistema);
+    end if;
+end $$
+DELIMITER ;

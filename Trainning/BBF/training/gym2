@@ -1,0 +1,131 @@
+insert into boxes values 
+	(null,"Sucursal1","Direccion1","Ciudad1",3511111111),
+    (null,"Sucursal2","Direccion2","Ciudad1",3512222222),
+    (null,"Sucursal3","Direccion3","Ciudad1",3513333333),
+    (null,"Sucursal4","Direccion4","Ciudad1",3514444444),
+    (null,"Sucursal5","Direccion5","Ciudad1",3515555555),
+    (null,"Sucursal6","Direccion6","Ciudad1",3516666666),
+    (null,"Sucursal7","Direccion7","Ciudad1",3517777777),
+    (null,"Sucursal8","Direccion8","Ciudad2",3518888888),
+    (null,"Sucursal9","Direccion9","Ciudad2",3519999999),
+    (null,"Sucursal10","Direccion10","Ciudad1",3510101010);
+    
+-- Inserción de datos tabla clases: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
+
+-- Inserción de datos tabla clases_types
+insert into clases_types values 
+	(null,"CrossFit","Active"),
+    (null,"Funcional","Active"),
+    (null,"Cardio","Active"),
+    (null,"Stretching","Active"),
+    (null,"GAP","Active"),
+    (null,"Yoga","Inactive"),
+    (null,"Musculación","Active");
+
+-- Inserción de datos tabla coaches
+insert into coaches values 
+	(null,"Coach 1","No"),
+    (null,"Coach 2","No"),
+    (null,"Coach 3","Si"),
+    (null,"Coach 4","Si"),
+    (null,"Coach 5","Si"),
+    (null,"Coach 6","Si"),
+    (null,"Coach 7","Si"),
+    (null,"Coach 8","Si"),
+    (null,"Coach 9","Si"),
+    (null,"Coach 10","Si"),
+    (null,"Coach 11","No"),
+    (null,"Coach 12","Si"),
+    (null,"Coach 13","Si"),
+    (null,"Coach 14","Si"),
+    (null,"Coach 15","No"),
+	(null,"Coach 16","Si"),
+    (null,"Coach 17","Si"),
+    (null,"Coach 18","No"),
+    (null,"Coach 19","Si"),
+    (null,"Coach 20","No"),
+    (null,"Coach 21","No"),
+    (null,"Coach 22","No"),
+    (null,"Coach 23","Si"),
+    (null,"Coach 24","Si"),
+    (null,"Coach 25","Si"),
+    (null,"Coach 26","Si"),
+    (null,"Coach 27","Si"),
+    (null,"Coach 28","Si"),
+    (null,"Coach 29","Si"),
+    (null,"Coach 30","Si"),
+	(null,"Coach 31","Si"),
+    (null,"Coach 32","Si"),
+    (null,"Coach 33","Si"),
+    (null,"Coach 34","Si"),
+    (null,"Coach 35","Si"),
+    (null,"Coach 36","Si"),
+    (null,"Coach 37","No"),
+    (null,"Coach 38","Si"),
+    (null,"Coach 39","Si"),
+    (null,"Coach 40","Si"),
+    (null,"Coach 41","Si"),
+    (null,"Coach 42","No"),
+    (null,"Coach 43","Si"),
+    (null,"Coach 44","Si"),
+    (null,"Coach 45","Si"),
+	(null,"Coach 46","Si"),
+    (null,"Coach 47","Si"),
+    (null,"Coach 48","Si"),
+    (null,"Coach 49","Si"),
+    (null,"Coach 50","No"),
+    (null,"Coach 51","Si"),
+    (null,"Coach 52","Si"),
+    (null,"Coach 53","Si"),
+    (null,"Coach 54","Si"),
+    (null,"Coach 55","Si"),
+    (null,"Coach 56","No"),
+    (null,"Coach 57","Si"),
+    (null,"Coach 58","No"),
+    (null,"Coach 59","Si"),
+    (null,"Coach 60","Si"),
+   	(null,"Coach 61","Si"),
+    (null,"Coach 62","Si"),
+    (null,"Coach 63","Si"),
+    (null,"Coach 64","Si"),
+    (null,"Coach 65","Si"),
+    (null,"Coach 66","Si"),
+    (null,"Coach 67","Si"),
+    (null,"Coach 68","No"),
+    (null,"Coach 69","Si"),
+    (null,"Coach 70","Si"),
+    (null,"Coach 71","Si"),
+    (null,"Coach 72","Si"),
+    (null,"Coach 73","Si"),
+    (null,"Coach 74","No"),
+    (null,"Coach 75","Si");
+    
+-- Inserción de datos tabla coaches_clases: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
+
+-- Inserción de datos tabla credit_types
+insert into credit_types values 
+	(null,"12 meses","Active"),
+    (null,"6 meses","Active"),
+    (null,"3 meses","Active"),
+    (null,"Suscripcion mensual","Active");
+
+-- Inserción de datos tabla payments_credit_types: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
+
+-- Inserción de datos tabla payments
+insert into payments values 
+	(null,"Tarjeta de credito - 12 cuotas Ahora 12","Inactive"),
+    (null,"Tarjeta de credito - 6 cuotas Ahora 6","Inactive"),
+    (null,"Tarjeta de credito - 3 cuotas Ahora 3","Inactive"),
+    (null,"Tarjeta de credito - 6 cuotas - Cuota simple 6","Active"),
+    (null,"Tarjeta de credito - 3 cuotas - Cuota simple 3","Active"),
+    (null,"Tarjeta de credito - Tarjeta de debito","Active"),
+    (null,"Tarjeta de credito - Suscripción automatica","Active"),
+    (null,"Efectivo","Active");
+    
+-- Inserción de datos tabla user: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
+
+-- Inserción de datos tabla trainees: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
+
+-- Inserción de datos tabla trainees_clases: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
+
+-- Inserción de datos tabla transactions: se realizó a través de importación de un CSV (compartido en drive - link en el archivo de presentación final)
