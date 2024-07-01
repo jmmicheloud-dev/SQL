@@ -13,5 +13,6 @@ and   b.contactId=c.id
 and   b.status='visited'
 and   c.status='enable'  
 and   u.status='enable'
-AND   month(b.dateVisit) = '05'
+AND   year(b.dateVisit) = '2024'
+AND   month(b.dateVisit) = '06'
 ORDER BY b.dateVisit
