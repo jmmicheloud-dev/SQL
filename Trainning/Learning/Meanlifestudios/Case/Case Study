@@ -1,0 +1,45 @@
+-- Case Study
+
+Here are create and insert statements for the data used 
+--------------------------------------------------------------------------------------------------------------
+create table customers (
+    id int primary key,
+    last_name varchar(20),
+    first_name varchar(20),
+    age int,
+    country varchar(10)
+);
+
+insert into customers (id, last_name, first_name, age, country) values
+(1, 'Mahendra', 'Mahi', 20, 'IND'),
+(2, 'Vasir', 'Sam', 27, 'IND'),
+(3, 'Rolanki', 'Maha', 25, 'USA'),
+(4, 'Ogolo', 'Umesh', 19, 'USA'),
+(5, 'Vangeti', 'Rakesh', 50, 'SA');
+
+
+create table orders (
+    Order_id int,
+    item  varchar(20),
+    amount int,
+    Customer_id int,
+    foreign key (customer_id) references customers(customer_id)
+);
+
+insert into orders values (1, 'Keyboard', 1200, 4), (2, 'Mouse', 1200, 4),(3, 'Monitor', 45000, 3),
+(4, 'Keyboard', 1440, 1), (5, 'Mousepad', 450, 2);
+
+create table shippings (
+    shipping_id int primary key,
+    status VARCHAR(50),
+    customer_id int,
+   foreign key (customer_id) references customers(customer_id)
+);
+
+
+insert into shippings  values(1, 'Pending', 2),(2, 'Pending', 4), (3, 'Delivered', 3), (4, 'Pending', 5), (5, 'Delivered', 1);
+
+create table payments (payment_id int, status varchar(20), order_id int, foreign key(order_id) references orders(order_id))
+ 
+ insert into payments values(120, 'Not Completed', 1), (125, 'Completed', 2),(128,'Completed', 3),
+ (140, 'Completed', 4), (155,'Completed', 5)

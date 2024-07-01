@@ -1,0 +1,2 @@
+INSERT INTO trainees_statistics_months 
+SELECT 'mes', ts.* FROM trainees_statistics ts
