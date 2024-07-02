@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE TRIGGER tareas_hist
+AFTER INSERT ON tareas
+FOR EACH ROW
+BEGIN	
+	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)
+	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());
+END;//
