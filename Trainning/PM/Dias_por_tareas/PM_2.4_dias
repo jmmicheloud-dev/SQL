@@ -1,0 +1,111 @@
+
+SELECT 
+	SUM(a.DiferenciaDias)
+	,u.first_name
+	,e.nombre
+--	, a.*
+	,t.codigo_edt
+	,edt.tema
+	,t.descripcion
+	from
+		(
+		SELECT 
+			DATEDIFF(MAX(ht.hasta), MIN(ht.desde)) AS DiferenciaDias
+			,ht.* 
+			FROM historial_tareas ht
+			LEFT JOIN tareas t ON t.id=ht.tarea_id
+			WHERE t.codigo_edt LIKE '2%'
+			AND (ht.user_id = '2' OR ht.user_id = '3')
+			AND ht.estado !='1'
+			GROUP BY ht.id
+		) a
+		LEFT JOIN tareas t ON t.id=a.tarea_id 
+		LEFT JOIN edt ON edt.codigo = t.codigo_edt
+		LEFT JOIN users u ON u.id = a.user_id
+		LEFT JOIN estados e ON e.id = a.estado
+	-- GROUP BY a.id
+	GROUP BY a.tarea_id, a.user_id -- , a.estado
+
+UNION all	
+	
+	
+SELECT 
+	SUM(a.DiferenciaDias)
+	,u.first_name
+	,e.nombre
+--	, a.*
+	,t.codigo_edt
+	,edt.tema
+	,t.descripcion
+	from
+		(
+		SELECT 
+			DATEDIFF(MAX(ht.hasta), MIN(ht.desde)) AS DiferenciaDias
+			,ht.* 
+			FROM historial_tareas ht
+			LEFT JOIN tareas t ON t.id=ht.tarea_id
+			WHERE t.codigo_edt LIKE '2%'
+			AND (ht.user_id = '2' OR ht.user_id = '3')
+			AND ht.estado ='1'
+			GROUP BY ht.id
+		) a
+		LEFT JOIN tareas t ON t.id=a.tarea_id 
+		LEFT JOIN edt ON edt.codigo = t.codigo_edt
+		LEFT JOIN users u ON u.id = a.user_id
+		LEFT JOIN estados e ON e.id = a.estado
+	-- GROUP BY a.id
+	GROUP BY a.tarea_id, a.user_id -- , a.estado
+
+    --
+    
+SELECT 
+	SUM(a.DiferenciaDias)
+	,t.descripcion
+	,u.first_name
+--	, a.*
+	,t.codigo_edt
+	,edt.tema
+	
+	from
+		(
+		SELECT 
+			DATEDIFF(MAX(ht.hasta), MIN(ht.desde)) AS DiferenciaDias
+			,ht.* 
+			FROM historial_tareas ht
+			LEFT JOIN tareas t ON t.id=ht.tarea_id
+			WHERE t.codigo_edt LIKE '2%'
+			AND (ht.user_id = '2' OR ht.user_id = '3')
+			GROUP BY ht.id
+		) a
+		LEFT JOIN tareas t ON t.id=a.tarea_id 
+		LEFT JOIN edt ON edt.codigo = t.codigo_edt
+		LEFT JOIN users u ON u.id = a.user_id
+	-- GROUP BY a.id
+	GROUP BY a.tarea_id, a.user_id
+	
+	
+
+    --
+
+    SELECT 
+	DATEDIFF((ht.hasta), (ht.desde)) AS DiferenciaDias
+	,ht.*
+	FROM historial_tareas ht
+	WHERE ht.user_id = '2' OR ht.user_id = '3'
+
+    --
+    SELECT 
+	e.nombre
+	,t.codigo_edt
+	,t.descripcion
+	,MIN(ht.desde)
+	,MAX(ht.hasta)
+	,DATEDIFF(MAX(ht.hasta), MIN(ht.desde)) AS DiferenciaDias
+	FROM tareas t
+	LEFT JOIN estados e ON e.id=t.estado_id
+	LEFT JOIN historial_tareas ht ON ht.tarea_id = t.id
+	LEFT JOIN users u ON u.id = ht.user_id
+	WHERE t.gestion_id = '2'
+	AND (ht.user_id = '2' OR ht.user_id = '3')
+	GROUP BY t.codigo_edt
+	
