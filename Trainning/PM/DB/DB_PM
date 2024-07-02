@@ -1,0 +1,320 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Versión del servidor:         11.4.2-MariaDB - mariadb.org binary distribution
+-- SO del servidor:              Win64
+-- HeidiSQL Versión:             11.3.0.6295
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+-- Volcando estructura de base de datos para information_schema
+CREATE DATABASE IF NOT EXISTS `information_schema` /*!40100 DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci */;
+USE `information_schema`;
+
+-- Volcando estructura para tabla information_schema.TRIGGERS
+CREATE TEMPORARY TABLE IF NOT EXISTS `TRIGGERS` (
+  `TRIGGER_CATALOG` varchar(512) NOT NULL,
+  `TRIGGER_SCHEMA` varchar(64) NOT NULL,
+  `TRIGGER_NAME` varchar(64) NOT NULL,
+  `EVENT_MANIPULATION` varchar(6) NOT NULL,
+  `EVENT_OBJECT_CATALOG` varchar(512) NOT NULL,
+  `EVENT_OBJECT_SCHEMA` varchar(64) NOT NULL,
+  `EVENT_OBJECT_TABLE` varchar(64) NOT NULL,
+  `ACTION_ORDER` bigint(4) NOT NULL,
+  `ACTION_CONDITION` longtext,
+  `ACTION_STATEMENT` longtext NOT NULL,
+  `ACTION_ORIENTATION` varchar(9) NOT NULL,
+  `ACTION_TIMING` varchar(6) NOT NULL,
+  `ACTION_REFERENCE_OLD_TABLE` varchar(64),
+  `ACTION_REFERENCE_NEW_TABLE` varchar(64),
+  `ACTION_REFERENCE_OLD_ROW` varchar(3) NOT NULL,
+  `ACTION_REFERENCE_NEW_ROW` varchar(3) NOT NULL,
+  `CREATED` datetime(2),
+  `SQL_MODE` varchar(8192) NOT NULL,
+  `DEFINER` varchar(384) NOT NULL,
+  `CHARACTER_SET_CLIENT` varchar(32) NOT NULL,
+  `COLLATION_CONNECTION` varchar(64) NOT NULL,
+  `DATABASE_COLLATION` varchar(64) NOT NULL
+) ENGINE=Aria DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci PAGE_CHECKSUM=0;
+
+-- Volcando datos para la tabla information_schema.TRIGGERS: 2 rows
+/*!40000 ALTER TABLE `TRIGGERS` DISABLE KEYS */;
+REPLACE INTO `TRIGGERS` (`TRIGGER_CATALOG`, `TRIGGER_SCHEMA`, `TRIGGER_NAME`, `EVENT_MANIPULATION`, `EVENT_OBJECT_CATALOG`, `EVENT_OBJECT_SCHEMA`, `EVENT_OBJECT_TABLE`, `ACTION_ORDER`, `ACTION_CONDITION`, `ACTION_STATEMENT`, `ACTION_ORIENTATION`, `ACTION_TIMING`, `ACTION_REFERENCE_OLD_TABLE`, `ACTION_REFERENCE_NEW_TABLE`, `ACTION_REFERENCE_OLD_ROW`, `ACTION_REFERENCE_NEW_ROW`, `CREATED`, `SQL_MODE`, `DEFINER`, `CHARACTER_SET_CLIENT`, `COLLATION_CONNECTION`, `DATABASE_COLLATION`) VALUES
+	('def', 'pm2', 'tareas_hist', 'INSERT', 'def', 'pm2', 'tareas', 1, NULL, 'BEGIN	\r\n	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)\r\n	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());\r\nEND', 'ROW', 'AFTER', NULL, NULL, 'OLD', 'NEW', '2024-07-01 10:08:15.65', 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION', 'root@localhost', 'utf8mb4', 'utf8mb4_general_ci', 'utf8mb4_general_ci'),
+	('def', 'pm2', 'tareas_updt', 'UPDATE', 'def', 'pm2', 'tareas', 1, NULL, 'BEGIN	\r\n	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)\r\n	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());\r\nEND', 'ROW', 'AFTER', NULL, NULL, 'OLD', 'NEW', '2024-07-01 10:08:02.16', 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION', 'root@localhost', 'utf8mb4', 'utf8mb4_general_ci', 'utf8mb4_general_ci');
+/*!40000 ALTER TABLE `TRIGGERS` ENABLE KEYS */;
+
+
+-- Volcando estructura de base de datos para pm2
+CREATE DATABASE IF NOT EXISTS `pm2` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `pm2`;
+
+-- Volcando estructura para tabla pm2.edt
+CREATE TABLE IF NOT EXISTS `edt` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gestion` int(11) DEFAULT NULL,
+  `tema` varchar(50) DEFAULT NULL,
+  `detalle` varchar(250) DEFAULT NULL,
+  `codigo` varchar(50) DEFAULT NULL,
+  UNIQUE KEY `codigo` (`codigo`),
+  KEY `Índice 1` (`id`) USING BTREE,
+  KEY `FK_EDT_Gestion` (`gestion`) USING BTREE,
+  CONSTRAINT `FK_edt_gestion` FOREIGN KEY (`gestion`) REFERENCES `gestion` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Volcando datos para la tabla pm2.edt: ~20 rows (aproximadamente)
+/*!40000 ALTER TABLE `edt` DISABLE KEYS */;
+REPLACE INTO `edt` (`id`, `gestion`, `tema`, `detalle`, `codigo`) VALUES
+	(5, 1, 'CRM', '', '1.5'),
+	(6, 1, 'Mobbex', '', '1.15'),
+	(7, 1, 'Molinetes', '', '1.16'),
+	(10, 2, 'Estadisticas liquidacion', '', '2.1'),
+	(11, 3, 'Usuario Duplicado', '', '3.1'),
+	(12, 4, 'APk', '', '4.1'),
+	(13, 5, 'UI / UX', '', '5.1'),
+	(14, 8, 'Valle Escondido', '', '8.1'),
+	(15, 8, 'San Carlos', '', '8.2'),
+	(16, 8, 'Warcalde', '', '8.3'),
+	(17, 8, 'Chacabuco', '', '8.4'),
+	(18, 9, 'Liquidaciones', '', '9.1'),
+	(19, 9, 'Mobex', '', '9.2'),
+	(20, 5, 'Estilos de Marca', '', '5.3'),
+	(21, 5, 'Estilos QR Molinetes', '', '5.4'),
+	(10, 2, 'NPS', '', '2.5'),
+	(22, 3, 'Problemas de usuarios', '', '3.4'),
+	(24, 2, 'Encuestas', '', '2.4'),
+	(25, 1, 'Convenios', '', '1.17'),
+	(26, 4, 'Beneficios', '', '4.2');
+/*!40000 ALTER TABLE `edt` ENABLE KEYS */;
+
+-- Volcando estructura para tabla pm2.estados
+CREATE TABLE IF NOT EXISTS `estados` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) DEFAULT NULL,
+  `detalle` varchar(150) DEFAULT NULL,
+  `estado` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla pm2.estados: ~9 rows (aproximadamente)
+/*!40000 ALTER TABLE `estados` DISABLE KEYS */;
+REPLACE INTO `estados` (`id`, `nombre`, `detalle`, `estado`) VALUES
+	(0, 'a definir', 'a definir', 'activo'),
+	(1, 'Espera', 'Tareas que están en espera de aprobación, recursos o información adicional.', 'activo'),
+	(2, 'Proceso', 'La tarea está en marcha.', 'activo'),
+	(3, 'Pausado', 'Indica que la tarea está en pausa debido a factores externos o cambios en los requerimientos o recursos.', 'activo'),
+	(4, 'Completado', 'Indica que la tarea se ha finalizado.', 'activo'),
+	(5, 'Cancelado', 'Tareas que se han detenido.', 'activo'),
+	(6, 'Reprogramado', 'Una tarea que cambio por algún motivo.', 'activo'),
+	(7, 'Vinculada', 'Esperando que otra tarea se complete antes de avanzar. ', 'activo'),
+	(8, 'Validacion', 'Tareas que están en espera de aprobación o información adicional.', NULL);
+/*!40000 ALTER TABLE `estados` ENABLE KEYS */;
+
+-- Volcando estructura para tabla pm2.gestion
+CREATE TABLE IF NOT EXISTS `gestion` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `area` varchar(255) DEFAULT NULL,
+  `detalle` varchar(255) DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Volcando datos para la tabla pm2.gestion: ~7 rows (aproximadamente)
+/*!40000 ALTER TABLE `gestion` DISABLE KEYS */;
+REPLACE INTO `gestion` (`id`, `area`, `detalle`, `estado`) VALUES
+	(1, 'Sistema', NULL, 'activo'),
+	(2, 'Estadisticas', NULL, 'activo'),
+	(3, 'Gestion de Usuarios', NULL, 'activo'),
+	(4, 'App', NULL, 'activo'),
+	(5, 'UI / UX', NULL, 'activo'),
+	(8, 'Molinetes', NULL, 'activo'),
+	(9, 'Administracion', NULL, 'activo');
+/*!40000 ALTER TABLE `gestion` ENABLE KEYS */;
+
+-- Volcando estructura para tabla pm2.historial_tareas
+CREATE TABLE IF NOT EXISTS `historial_tareas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tarea_id` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `desde` varchar(50) DEFAULT NULL,
+  `hasta` varchar(50) DEFAULT NULL,
+  `observaciones` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_historial_tareas_tareas` (`tarea_id`),
+  CONSTRAINT `FK_historial_tareas_tareas` FOREIGN KEY (`tarea_id`) REFERENCES `tareas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla pm2.historial_tareas: ~48 rows (aproximadamente)
+/*!40000 ALTER TABLE `historial_tareas` DISABLE KEYS */;
+REPLACE INTO `historial_tareas` (`id`, `tarea_id`, `estado`, `user_id`, `desde`, `hasta`, `observaciones`) VALUES
+	(1, 1, 4, 12, '2024-01-15 10:11:01', NULL, NULL),
+	(2, 2, 4, 3, '2024-01-15 10:11:01', NULL, NULL),
+	(3, 3, 4, 3, '2024-01-2210:11:01', NULL, NULL),
+	(4, 4, 4, 3, '2024-02-23 10:15:33', NULL, NULL),
+	(5, 5, 4, 12, '2024-02-25 10:15:33', NULL, NULL),
+	(10, 6, 4, 3, '2024-02-25 10:15:33', NULL, NULL),
+	(11, 7, 4, 3, '2024-02-28 10:31:47', NULL, NULL),
+	(12, 8, 4, 12, '2024-03-04 10:34:21', NULL, NULL),
+	(14, 9, 4, 3, '2024-03-08 10:38:22', NULL, NULL),
+	(15, 10, 4, 3, '2024-03-12 10:38:22', NULL, NULL),
+	(16, 11, 4, 3, '2024-03-26 10:42:28', NULL, NULL),
+	(17, 12, 1, 12, '2024-03-27 10:43:30', NULL, NULL),
+	(18, 13, 1, 5, '2024-04-08 10:49:42', NULL, NULL),
+	(19, 12, 4, 12, '2024-04-09 10:49:42', NULL, NULL),
+	(20, 14, 4, 12, '2024-04-10 10:49:42', NULL, NULL),
+	(22, 13, 4, 5, '2024-04-12 10:55:28', NULL, NULL),
+	(23, 15, 4, 3, '2024-04-18 10:55:28', NULL, NULL),
+	(24, 16, 4, 3, '2024-05-16 10:58:50', NULL, NULL),
+	(25, 17, 4, 3, '2024-06-12 11:02:39', NULL, NULL),
+	(26, 18, 1, 5, '2024-04-10 11:12:59', NULL, NULL),
+	(27, 18, 4, 5, '2024-06-27 11:14:35', NULL, NULL),
+	(29, 19, 4, 3, '2024-06-28 11:15:13', NULL, NULL),
+	(30, 20, 4, 3, '2024-06-29 11:15:13', NULL, NULL),
+	(34, 21, 4, 3, '2024-06-14 11:24:23', NULL, NULL),
+	(35, 22, 4, 3, '2024-06-21 11:25:19', NULL, NULL),
+	(36, 23, 4, 3, '2024-06-28 11:25:45', NULL, NULL),
+	(37, 24, 1, 4, '2023-12-13 11:42:46', NULL, NULL),
+	(38, 24, 2, 3, '2024-12-13 11:43:00', '2024-12-14 11:43:00', NULL),
+	(39, 24, 4, 3, '2024-12-14 11:43:00', '2024-12-14 11:43:00', NULL),
+	(40, 25, 0, 4, '2024-04-11 13:28:25', '2024-04-18 13:29:46', NULL),
+	(41, 25, 1, 3, '2024-04-18 13:29:46', '2024-04-22 13:32:16', NULL),
+	(42, 25, 2, 3, '2024-04-22 13:32:16', '2024-04-26 13:34:31', NULL),
+	(43, 25, 1, 3, '2024-04-26 13:34:31', '2024-05-03 13:41:28', NULL),
+	(44, 26, 2, 2, '2024-04-26 13:35:13', NULL, NULL),
+	(47, 27, 4, 2, '2024-04-28 13:39:22', '2024-04-29 13:39:22', NULL),
+	(49, 25, 2, 4, '2024-05-03 13:41:28', '2024-05-17 13:45:49', NULL),
+	(50, 26, 4, 2, '2024-05-12 13:43:41', '2024-05-13 13:43:41', NULL),
+	(51, 28, 4, 2, '2024-05-13 13:43:41', '2024-05-14 13:43:41', NULL),
+	(52, 29, 4, 2, '2024-05-20 13:45:49', '2024-05-21 13:45:49', NULL),
+	(54, 25, 1, 4, '2024-05-17 13:45:49', '2024-05-24', NULL),
+	(57, 25, 2, 2, '2024-05-24 13:45:49', '2024-05-25 13:45:49', NULL),
+	(58, 30, 1, 4, '2024-05-30 13:45:49', '2024-06-24 19:51:20', NULL),
+	(59, 25, 4, 2, '2024-05-30 13:45:49', '2024-05-31 13:45:49', NULL),
+	(60, 25, 8, 4, '2024-06-03 13:59:04', '2024-06-03 13:59:04', NULL),
+	(61, 31, 2, 3, '2024-06-03 13:59:04', '2024-06-05 13:59:04', NULL),
+	(62, 31, 2, 4, '2024-06-05 13:59:04', '2024-06-07 13:59:04', NULL),
+	(63, 31, 4, 3, '2024-06-07 13:59:04', '2024-06-07 13:59:04', NULL),
+	(65, 30, 5, 2, '2024-06-24 19:51:20', NULL, NULL);
+/*!40000 ALTER TABLE `historial_tareas` ENABLE KEYS */;
+
+-- Volcando estructura para tabla pm2.tareas
+CREATE TABLE IF NOT EXISTS `tareas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gestion_id` int(11) DEFAULT NULL,
+  `estado_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `codigo_edt` varchar(50) DEFAULT NULL,
+  `descripcion` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `id` (`id`) USING BTREE,
+  KEY `FK_tareas_estados` (`estado_id`) USING BTREE,
+  KEY `FK_tareas_users` (`user_id`) USING BTREE,
+  KEY `FK_tareas_edt` (`codigo_edt`) USING BTREE,
+  KEY `FK_tareas_gestion` (`gestion_id`) USING BTREE,
+  CONSTRAINT `FK_tareas_edt` FOREIGN KEY (`codigo_edt`) REFERENCES `edt` (`codigo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_tareas_estados` FOREIGN KEY (`estado_id`) REFERENCES `estados` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_tareas_gestion` FOREIGN KEY (`gestion_id`) REFERENCES `gestion` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_tareas_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla pm2.tareas: ~31 rows (aproximadamente)
+/*!40000 ALTER TABLE `tareas` DISABLE KEYS */;
+REPLACE INTO `tareas` (`id`, `gestion_id`, `estado_id`, `user_id`, `codigo_edt`, `descripcion`) VALUES
+	(1, 8, 4, 12, '8.2', 'PC en box'),
+	(2, 8, 4, 3, '8.2', 'Aceso remoto - Instalacion anydesk'),
+	(3, 8, 4, 3, '8.2', 'Instalar codigo en la pc'),
+	(4, 8, 4, 3, '8.2', 'Configurar servicio local '),
+	(5, 8, 4, 12, '8.1', 'PC en box'),
+	(6, 8, 4, 3, '8.1', 'Aceso remoto - Instalacion anydesk'),
+	(7, 8, 4, 3, '8.1', 'Instalar codigo en la pc'),
+	(8, 8, 4, 12, '8.3', 'PC en box'),
+	(9, 8, 4, 3, '8.1', 'Falla electronica o alimentacion'),
+	(10, 8, 4, 3, '8.2', 'Falla electronica o alimentacion'),
+	(11, 8, 4, 3, '8.3', 'Configurar servicio local '),
+	(12, 8, 4, 12, '8.2', 'PC en box'),
+	(13, 8, 4, 5, '8.3', 'Falla electronica o alimentacion'),
+	(14, 8, 4, 12, '8.4', 'PC en box'),
+	(15, 8, 4, 3, '8.2', 'Configurar servicio local '),
+	(16, 8, 4, 3, '8.3', 'Falla electronica o alimentacion'),
+	(17, 8, 4, 3, '8.2', 'Configurar servicio local '),
+	(18, 8, 4, 5, '8.4', 'PC en box -usb a com'),
+	(19, 8, 4, 3, '8.4', 'Instalar codigo en la pc'),
+	(20, 8, 4, 3, '8.4', 'Configurar servicio local '),
+	(21, 8, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(22, 8, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(23, 8, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(24, 2, 4, 3, '2.1', 'v_liquidacion_3'),
+	(25, 2, 4, 2, '2.4', 'Encuestas en app'),
+	(26, 4, 4, 2, '4.2', 'Actualizacion necesaria en IOS y Android APK'),
+	(27, 4, 4, 2, '4.1', 'Disponible en Sotre Android y IOS app 3.3.2'),
+	(28, 4, 4, 2, '4.1', 'Disponible en Sotre Android y IOS app 3.3.3'),
+	(29, 4, 4, 2, '4.1', 'Disponible en Sotre Android y IOS app 3.3.5'),
+	(30, 2, 1, 2, '2.5', 'Encuestas NPS'),
+	(31, 2, 4, 3, '2.4', 'Encuestas en app testeo interno');
+/*!40000 ALTER TABLE `tareas` ENABLE KEYS */;
+
+-- Volcando estructura para tabla pm2.users
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(150) DEFAULT NULL,
+  `last_name` varchar(150) DEFAULT NULL,
+  `area` varchar(150) DEFAULT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  KEY `Índice 1` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Volcando datos para la tabla pm2.users: ~13 rows (aproximadamente)
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+REPLACE INTO `users` (`id`, `first_name`, `last_name`, `area`, `email`, `birth_date`, `created_at`, `updated_at`) VALUES
+	(14, 'por asignar', NULL, NULL, NULL, NULL, NULL, NULL),
+	(1, 'Marco', 'Grdin', 'Briskbox CEO', 'marco@briskbox.fit', NULL, NULL, NULL),
+	(2, 'Maxi', 'Marelli', 'Desarrollo', 'maximiliano.marelli@gmail.com', NULL, NULL, NULL),
+	(3, 'Juan Manuel', 'Micheloud', 'PM Briskbox', 'jmmicheloud@gmail.com', NULL, NULL, NULL),
+	(4, 'Franco', 'Ferrero', 'Briskbox', NULL, NULL, NULL, NULL),
+	(5, 'David', 'Redes', 'Redes', NULL, NULL, NULL, NULL),
+	(6, 'Jose ', 'Garcia', 'Butaca11', NULL, NULL, NULL, NULL),
+	(7, 'Valentina ', 'Fedullo', 'Butaca11', NULL, NULL, NULL, NULL),
+	(8, 'Gaston', 'Mattio', 'Briskbox', 'gastonmattio@gmail.com', NULL, NULL, NULL),
+	(9, 'Gaston', 'Mattio', 'Butaca11', NULL, NULL, NULL, NULL),
+	(10, 'Camila', 'Martin', 'Butaca11', 'camumartin1996@gmail.com', NULL, NULL, NULL),
+	(11, 'Sol', 'Avila', 'PM Butaca11', 'pm2@butacaonce.com;sol@cuestasbranding.com', NULL, NULL, NULL),
+	(12, 'Eugenio', NULL, 'Mantenimiento Briskbox', 'mantenimiento@briskbox.fit', NULL, NULL, NULL);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+
+-- Volcando estructura para disparador pm2.tareas_hist
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER tareas_hist
+AFTER INSERT ON tareas
+FOR EACH ROW
+BEGIN	
+	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)
+	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
+-- Volcando estructura para disparador pm2.tareas_updt
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `tareas_updt` AFTER UPDATE ON `tareas` FOR EACH ROW BEGIN	
+	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)
+	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;

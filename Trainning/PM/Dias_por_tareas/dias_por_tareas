@@ -1,0 +1,35 @@
+
+SELECT 
+	SUM(a.DiferenciaDias)
+	,t.descripcion
+	,u.first_name
+--	, a.*
+	,t.codigo_edt
+	,edt.tema
+	
+	from
+		(
+		SELECT 
+			DATEDIFF(MAX(ht.hasta), MIN(ht.desde)) AS DiferenciaDias
+			,ht.* 
+			FROM historial_tareas ht
+			LEFT JOIN tareas t ON t.id=ht.tarea_id
+			WHERE t.codigo_edt LIKE '2%'
+			AND (ht.user_id = '2' OR ht.user_id = '3')
+			GROUP BY ht.id
+		) a
+		LEFT JOIN tareas t ON t.id=a.tarea_id 
+		LEFT JOIN edt ON edt.codigo = t.codigo_edt
+		LEFT JOIN users u ON u.id = a.user_id
+	-- GROUP BY a.id
+	GROUP BY a.tarea_id, a.user_id
+
+
+
+"SUMA_Dias" "descripcion"       "first_name"	"codigo_edt"	"tema"
+"15"	    "Encuestas en app"	"Juan Manuel"	"2.4"	        "Encuestas"
+"2"	        "Encuestas en app"	"Maxi"	        "2.4"	        "Encuestas"
+"2"	        "Encuestas en app   
+            testeo interno"	    "Juan Manuel"	"2.4"	        "Encuestas"
+"1"	        "v_liquidacion_3"	"Juan Manuel"	"2.1"	        "Estadisticas liquidacion"
+	        "Encuestas NPS"	    "Maxi"	        "2.5"	        "NPS"

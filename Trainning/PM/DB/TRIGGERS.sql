@@ -1,0 +1,51 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Versión del servidor:         11.4.2-MariaDB - mariadb.org binary distribution
+-- SO del servidor:              Win64
+-- HeidiSQL Versión:             11.3.0.6295
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+-- Volcando estructura para tabla information_schema.TRIGGERS
+CREATE TEMPORARY TABLE IF NOT EXISTS `TRIGGERS` (
+  `TRIGGER_CATALOG` varchar(512) NOT NULL,
+  `TRIGGER_SCHEMA` varchar(64) NOT NULL,
+  `TRIGGER_NAME` varchar(64) NOT NULL,
+  `EVENT_MANIPULATION` varchar(6) NOT NULL,
+  `EVENT_OBJECT_CATALOG` varchar(512) NOT NULL,
+  `EVENT_OBJECT_SCHEMA` varchar(64) NOT NULL,
+  `EVENT_OBJECT_TABLE` varchar(64) NOT NULL,
+  `ACTION_ORDER` bigint(4) NOT NULL,
+  `ACTION_CONDITION` longtext,
+  `ACTION_STATEMENT` longtext NOT NULL,
+  `ACTION_ORIENTATION` varchar(9) NOT NULL,
+  `ACTION_TIMING` varchar(6) NOT NULL,
+  `ACTION_REFERENCE_OLD_TABLE` varchar(64),
+  `ACTION_REFERENCE_NEW_TABLE` varchar(64),
+  `ACTION_REFERENCE_OLD_ROW` varchar(3) NOT NULL,
+  `ACTION_REFERENCE_NEW_ROW` varchar(3) NOT NULL,
+  `CREATED` datetime(2),
+  `SQL_MODE` varchar(8192) NOT NULL,
+  `DEFINER` varchar(384) NOT NULL,
+  `CHARACTER_SET_CLIENT` varchar(32) NOT NULL,
+  `COLLATION_CONNECTION` varchar(64) NOT NULL,
+  `DATABASE_COLLATION` varchar(64) NOT NULL
+) ENGINE=Aria DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci PAGE_CHECKSUM=0;
+
+-- Volcando datos para la tabla information_schema.TRIGGERS: 2 rows
+/*!40000 ALTER TABLE `TRIGGERS` DISABLE KEYS */;
+REPLACE INTO `TRIGGERS` (`TRIGGER_CATALOG`, `TRIGGER_SCHEMA`, `TRIGGER_NAME`, `EVENT_MANIPULATION`, `EVENT_OBJECT_CATALOG`, `EVENT_OBJECT_SCHEMA`, `EVENT_OBJECT_TABLE`, `ACTION_ORDER`, `ACTION_CONDITION`, `ACTION_STATEMENT`, `ACTION_ORIENTATION`, `ACTION_TIMING`, `ACTION_REFERENCE_OLD_TABLE`, `ACTION_REFERENCE_NEW_TABLE`, `ACTION_REFERENCE_OLD_ROW`, `ACTION_REFERENCE_NEW_ROW`, `CREATED`, `SQL_MODE`, `DEFINER`, `CHARACTER_SET_CLIENT`, `COLLATION_CONNECTION`, `DATABASE_COLLATION`) VALUES
+	('def', 'pm2', 'tareas_hist', 'INSERT', 'def', 'pm2', 'tareas', 1, NULL, 'BEGIN	\r\n	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)\r\n	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());\r\nEND', 'ROW', 'AFTER', NULL, NULL, 'OLD', 'NEW', '2024-07-01 10:08:15.65', 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION', 'root@localhost', 'utf8mb4', 'utf8mb4_general_ci', 'utf8mb4_general_ci'),
+	('def', 'pm2', 'tareas_updt', 'UPDATE', 'def', 'pm2', 'tareas', 1, NULL, 'BEGIN	\r\n	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)\r\n	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());\r\nEND', 'ROW', 'AFTER', NULL, NULL, 'OLD', 'NEW', '2024-07-01 10:08:02.16', 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION', 'root@localhost', 'utf8mb4', 'utf8mb4_general_ci', 'utf8mb4_general_ci');
+/*!40000 ALTER TABLE `TRIGGERS` ENABLE KEYS */;
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
