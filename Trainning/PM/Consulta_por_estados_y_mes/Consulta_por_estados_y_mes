@@ -1,0 +1,34 @@
+
+
+	SELECT 
+		t.id
+		,g.area
+	--	,t.gestion_id
+	--	,t.estado_id
+		,t.codigo_edt
+	--	,t.user_id
+		,u.first_name
+		,t.descripcion
+		,e.nombre
+		,(SELECT ht.desde FROM historial_tareas ht WHERE ht.tarea_id=t.id  ORDER BY ht.id asc LIMIT 1) desde  
+		,(SELECT ht.hasta FROM historial_tareas ht WHERE ht.tarea_id=t.id  ORDER BY ht.id desc LIMIT 1) hasta  
+		FROM  tareas t
+		INNER JOIN estados e ON e.id=t.estado_id
+		LEFT JOIN users u ON u.id = t.user_id
+		LEFT JOIN gestion g ON g.id = t.gestion_id
+		LEFT JOIN historial_tareas ht ON ht.tarea_id = t.id
+	--	WHERE e.nombre   = 'Proceso'
+		WHERE e.nombre   = 'Completado'
+	--	WHERE e.nombre = 'Pausado'
+	--	WHERE e.nombre = 'a definir'
+	--	WHERE e.nombre = 'Espera'
+	--	OR e.nombre = 'Espera'
+	--	WHERE e.nombre = 'Cancelado'
+	--	WHERE e.nombre = 'Reprogramado'
+	--	WHERE e.nombre = 'Validacion'
+	--	WHERE e.nombre = 'Vinculada'
+		
+		AND (ht.desde LIKE '2024-06%' OR ht.hasta LIKE '2024-06%')
+		
+		ORDER BY t.codigo_edt
+		
