@@ -1,0 +1,25 @@
+
+CREATE [OR REPLACE]
+    [DEFINER = { user | CURRENT_USER | role | CURRENT_ROLE }]
+    TRIGGER [IF NOT EXISTS] trigger_name trigger_time trigger_event
+    ON tbl_name FOR EACH ROW
+   [{ FOLLOWS | PRECEDES } other_trigger_name ]
+   trigger_stmt;
+
+trigger time:
+    BEFORE
+  | AFTER
+
+trigger_event:
+    INSERT
+  | UPDATE
+  | DELETE
+
+CREATE DEFINER=`root`@`localhost` TRIGGER historial_tareas
+  AFTER INSERT ON tareas FOR EACH ROW
+    INSERT historial_tareas SET tareas = historial_tareas.tareas;
+
+CREATE DEFINER=`root`@`localhost` TRIGGER historial_tareas
+  AFTER UPDATE ON tareas FOR EACH ROW
+    INSERT historial_tareas SET tareas = historial_tareas.tareas;
+

@@ -33,3 +33,13 @@ SELECT
             testeo interno"	    "Juan Manuel"	"2.4"	        "Encuestas"
 "1"	        "v_liquidacion_3"	"Juan Manuel"	"2.1"	        "Estadisticas liquidacion"
 	        "Encuestas NPS"	    "Maxi"	        "2.5"	        "NPS"
+
+
+--
+/*
+SELECT 
+	DATEDIFF((ht.hasta), (ht.desde)) AS DiferenciaDias
+	,ht.*
+	FROM historial_tareas ht
+	WHERE ht.user_id = '2' OR ht.user_id = '3'
+*/

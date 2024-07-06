@@ -1,0 +1,256 @@
+Integración Embebida
+
+El SDK para Embeber le permite embeber de manera fácil y rápida nuestra solución de checkout y suscripciones en cualquier sitio web.
+
+
+Creación
+La inserción del embebido comienza al crear el Checkout o la Suscripción vía API. En este punto, es necesario añadir dentro del nodo options los atributos domain y embed.
+
+"options":{
+    "embed": true,
+    "domain": "eldominiodelsitio.com.ar"
+}
+
+Implementación del SDK
+La versión actual del SDK es: 1.0.23.
+
+Insertar en el sitio de manera Fija en la Cabecera
+<script src="https://res.mobbex.com/js/embed/mobbex.embed@1.0.23.js" integrity="sha384-4ZaVLM5sK7lqPyLJKWyRR1Zd0zGBbkaD6uVHvtyWTrrVKGdIVCJ6Ql90yiqP+q7f" crossorigin="anonymous"></script>
+
+Insertar en el sitio dinámicamente en el Body
+Cargá nuestra librería Javascript en tu sitio:
+
+<html>
+    <body>
+        <script type="text/javascript">
+            var script = document.createElement("script");
+            script.src = `https://res.mobbex.com/js/embed/mobbex.embed@1.0.23.js?t=${Date.now()}`;
+            script.async = true;
+            script.crossorigin = "anonymous";
+            script.addEventListener("load", () => {
+                // Realizá la acción que sea necesaria aca :)
+                // renderMobbexButton(); // Muestra el botón dentro del body 
+                // initMobbexPayment(); // Abre inmediatamente el modal de pago
+            });
+            document.body.appendChild(script);
+        </script>
+    </body>
+</html>
+
+Creación y Eventos
+El modal de pagos (tanto para checkout como suscripciones) puede ser abierto utilizando el botón de Mobbex o a través del propio código. 
+
+Documento HTML
+Dentro del body del HTML donde se vaya a insertar el modal, es necesario definir un div con la propiedad id en función del tipo de apertura que se vaya a utilizar.
+
+Botón de Mobbex
+<div id="mbbx-button"></div>
+
+Apertura por Código
+<div id="mbbx-container"></div>
+
+
+
+JavaScript
+Es necesario definir una variable que contiene todos los manejadores de eventos para el Modal. Su estructura varía en función de si es utilizada para Checkout o para Suscripciones.
+
+Opciones para Checkout
+var options = {
+    id: "{ID Checkout}",
+    type: "checkout",
+    onResult: (data) => {
+        // OnResult es llamado cuando se toca el Botón Cerrar
+        window.MobbexEmbed.close();
+    },
+    onPayment: (data) => {
+        console.info("Payment: ", data);
+    },
+    onOpen: () => {
+        console.info("Pago iniciado.");
+    },
+    onClose: (cancelled) => {
+        console.info(`${cancelled ? "Cancelado" : "Cerrado"}`);
+    },
+    onError: (error) => {
+        console.error("ERROR: ", error);
+    },
+};
+
+Opciones para Suscripciones
+var options = {
+    id: "{ID Suscripción}",
+    sid: "{ID Suscriptor}",
+    type: "subscriber_source",
+    onResult: (data) => {
+        // OnResult es llamado cuando se toca el Botón Cerrar
+        window.MobbexEmbed.close();
+    },
+    onPayment: (data) => {
+        console.info("Payment: ", data);
+    },
+    onOpen: () => {
+        console.info("Pago iniciado.");
+    },
+    onClose: (cancelled) => {
+        console.info(`${cancelled ? "Cancelado" : "Cerrado"}`);
+    },
+    onError: (error) => {
+        console.error("ERROR: ", error);
+    },
+};
+
+
+Renderización/Inicialización 
+El proceso de renderización o inicialización depende de cuál sea la modalidad para la apertura del modal. Consiste en definir una función de javascript que va a realizar el proceso y que es llamada desde el punto donde se insertó el SDK en la página.
+
+Botón de Mobbex
+function renderMobbexButton() {
+    window.MobbexEmbed.render(options, "#mbbx-button");
+}
+
+Apertura por Código
+function initMobbexPayment() {
+    var mbbxButton = window.MobbexEmbed.init(options);
+
+    mbbxButton.open();
+}
+
+
+
+Resultado de la operación
+El resultado de la operación de ejemplo será obtenido dentro del método onPayment del botón.
+
+{
+    "id": "kS6D18unD",
+    "status": {
+        "code": "2",
+        "text": "En Espera",
+        "message": "El cupón vence a los 5 días de emitido."
+    }
+}
+
+Opciones
+Las siguientes opciones pueden ser provistas al botón Mobbex en la renderización o inicialización:
+
+Inicializadores
+type: Tipo de Pago Embebido: Sólo acepta 2 opciones: checkout (Checkout) o payment_source  (Cambio de Medio de pago para Suscriptores).
+id: ID de Checkout generado en el servidor o ID de Suscripción, dependiendo el tipo.
+sid: ID de Suscriptor (sólo para Suscripciones).
+
+Callbacks
+onPayment: (data) => { }
+onError: (error) => { }
+onOpen: () => { }
+onClose: (cancelled) => { }
+
+El método onClose será llamado al cerrar el modal de pagos. La variable cancelled será true o false dependiendo de que el modal haya sido cerrado antes de realizar la operación o después, respectivamente.
+
+El método onPayment será llamado al procesarse una operación, independientemente del método onClose, y contendrá dentro de la variable data toda la información relacionada al estado de dicha operación.
+
+Personalización
+button: Objeto Javascript con las siguientes opciones
+
+{
+    "text": "Pagar con Mobbex",
+    "image": "https://res.mobbex.com/images/sources/mobbex.png",
+    "backgroundColor": "rgb(137,0,255)",
+    "textColor": "rgb(255, 255, 255)",
+    "textSize": "1rem"
+}
+
+
+
+Creación de Servicio para Embeber
+Sólo se deben crear Checkouts del lado Servidor y compartir únicamente el ID o UID generado por Mobbex.
+
+Checkout Ejemplo
+Esto es un ejemplo de la utilización de las opciones especiales en PHP. La creación del checkout siempre debe realizarse desde el lado servidor, ya que sino quedarían expuestas las credenciales de su cuenta. Para más ejemplos ver la documentación de Checkout.
+
+<?php
+
+$request = new HttpRequest();
+$request->setUrl('https://api.mobbex.com/p/checkout');
+$request->setMethod(HTTP_METH_POST);
+
+$request->setHeaders(array(
+  'cache-control' => 'no-cache',
+  'Content-Type' => 'application/json',
+  'x-lang' => 'es',
+  'x-access-token' => 'd31f0721-2f85-44e7-bcc6-15e19d1a53cc',
+  'x-api-key' => 'zJ8LFTBX6Ba8D611e9io13fDZAwj0QmKO1Hn1yIj'
+));
+
+$request->setBody('{
+    "total": 100.2,
+    "currency": "ARS",
+    "reference": "2982-2XtPXlgSaWccqUyobuv4sEmLYMV0N6oX6MoridMw",
+    "description": "Descripción de la Venta",
+    "items": [{
+        "image": "https://www.mobbex.com/wp-content/uploads/2019/03/web_logo.png",
+        "quantity": 2,
+        "description": "Mi Producto",
+        "total": 50
+    }, {
+        "image": "https://www.mobbex.com/wp-content/uploads/2019/03/web_logo.png",
+        "quantity": 1,
+        "description": "Mi otro producto",
+        "total": 50.2
+    }],
+    "options": {
+    "domain": "midominio.com",
+    "embed": true
+    },
+    "return_url": "https://mobbex.com/sale/return?session=56789",
+    "webhook": "https://mobbex.com/sale/webhook?user=1234"
+}');
+
+try {
+  $response = $request->send();
+
+  echo $response->getBody();
+} catch (HttpException $ex) {
+  echo $ex;
+}
+?>
+
+Suscripción Ejemplo
+Este ejemplo muestra cómo crear una suscripción para que la misma pueda ser utilizada con el SDK para embeber. Notar que se utilizan las mismas propiedades dentro del nodo "options" que en el caso de checkout. Para más información ver la documentación de Suscripciones.
+
+<?php
+
+$request = new HttpRequest();
+$request->setUrl('https://api.mobbex.com/p/subscriptions');
+$request->setMethod(HTTP_METH_POST);
+
+$request->setHeaders(array(
+  'cache-control' => 'no-cache',
+  'Content-Type' => 'application/json',
+  'x-lang' => 'es',
+  'x-access-token' => 'd31f0721-2f85-44e7-bcc6-15e19d1a53cc',
+  'x-api-key' => 'zJ8LFTBX6Ba8D611e9io13fDZAwj0QmKO1Hn1yIj'
+));
+
+$request->setBody('{
+    "total": 100,
+    "currency": "ARS",
+    "setupFee": 0,
+    "type": "dynamic",
+    "name": "Suscripción Demo",
+    "reference": "2982-2XtPXlgSaWccqUyobuv4sEmLYMV0N6oX6MoridMw",
+    "description": "Descripción de la Suscripción",
+    "options": {
+    "domain": "midominio.com",
+    "embed": true
+    },
+    "return_url": "https://mobbex.com/subscription/return?session=56789",
+    "webhook": "https://mobbex.com/subscription/webhook?user=1234"
+}');
+
+try {
+  $response = $request->send();
+
+  echo $response->getBody();
+} catch (HttpException $ex) {
+  echo $ex;
+}
+?>
