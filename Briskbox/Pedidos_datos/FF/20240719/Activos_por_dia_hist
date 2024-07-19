@@ -1,0 +1,35 @@
+-- la intencion es obtener historico por dia la cantidad de alumnos con plan vigente
+
+-- Eliminar la tabla si existe
+DROP TABLE IF EXISTS daily_counts;
+
+-- Eliminar la tabla si ya existe
+DROP TABLE IF EXISTS daily_counts;
+
+-- Crear la tabla de nuevo
+CREATE TABLE daily_counts (
+    count INT,
+    date DATE,
+    box_id CHAR(36)
+);
+
+-- Establecer las fechas de inicio y fin
+SET @FechaInicio = '2024-06-01';
+SET @FechaFin = '2024-07-02';
+
+-- Bucle para insertar los datos
+WHILE @FechaInicio <= @FechaFin DO
+    SET @query = CONCAT('INSERT INTO daily_counts (count, date, box_id) 
+                         SELECT COUNT(*), "', @FechaInicio, '", trc.box_id 
+                         FROM trainees_credits trc 
+                         WHERE DATE(trc.datetime) <= DATE("', @FechaInicio, '") 
+                         AND DATE(trc.expiration_date) >= DATE("', @FechaInicio, '") 
+                         GROUP BY trc.box_id');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    
+    SET @FechaInicio = DATE_ADD(@FechaInicio, INTERVAL 1 DAY);
+END WHILE;
+
+

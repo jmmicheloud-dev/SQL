@@ -1,0 +1,16 @@
+-- coalesce function
+
+Select id , coalesce(FirstName, MiddleName, LastName) as LastName
+    From    tblEmployee
+
+
+id	FirtName	MiddleName	LastName		id 	Name
+1	Sam	        NULL	    NULL		    1	Sam
+2	NULL	    Todd	    Tanzan		    2	Todd
+3	NULL	    NULL	    Sara		    3	Sara
+4	Ben	        Parker	    NULL		    4	Ben
+5	James	    Nick 	    Nancy		    5	James
+
+
+
+
