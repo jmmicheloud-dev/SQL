@@ -1,0 +1,176 @@
+-- 
+
+--48070175 Bruno
+--93720835 Camila
+
+-- No me figuran en sistema como venta y cliente nuevo,
+-- en la parte de estadisticas de ventas x vendedor, 
+-- Valentina Gambero
+
+
+ /*      */
+select p.id payment_id,
+       p.name payment_name,
+       count(1) as sale_quantity,
+       sum(tp.subtotal) AS sale_subtotal,
+       sum(tp.discount) AS sale_discount,
+       sum(tp.surcharge) AS sale_surcharge,
+       sum(tp.amount) AS sale_amount
+   from transactions t,
+       transaction_types tt,
+       transactions_payments tp,
+       payments p
+   where t.transaction_type_id = tt.id
+   and   t.id = tp.transaction_id
+   and   tp.payment_id = p.id
+   and   tt.type = 'SALES'
+   and   tt.move_tax = 1
+   and   t.status = 'ACTIVE'
+   and   t.datetime LIKE '2024-07-08%'
+  /* AND   t.company_id=''
+	AND   t.box_id='' */
+   group by p.id
+   order by sale_amount DESC;
+
+/*                     */
+       
+select 	t.datetime as date,
+         tt.name as t_name,
+         /* 
+         
+         */
+         t.id,t.name,
+         p.name as p_name,
+         p.id as payment_id,
+         b.name,
+         (t.amount * tt.move_cashbox) as balance,
+         tt.move_cashbox as tt_move
+     from transactions t,
+         transaction_types tt,
+         transactions_payments tp,
+         boxes b,
+         payments p
+         where t.transaction_type_id = tt.id
+         and t.box_id = b.id
+         and t.id = tp.transaction_id
+         and tp.payment_id = p.id
+         and t.status = 'ACTIVE'
+         and tt.name not LIKE '%Caja'
+         and tt.move_cashbox = 1
+         /*  
+          select *
+          	from transactions t
+          	where t.trainee_id='6f871501-271b-4146-b027-41e514bd4868'
+          	
+            id	                                    datetime	number          			
+            2e3604d6-5fa3-4b49-839e-90a90d054e09	2024-05-21	264700	       		Camila Orias	CANCELED	2024-05-21 09:44:35
+            3e0f085d-c25b-4f36-b833-8be8149891e6	2024-07-08	B0001-00002405		Camila Orias	ACTIVE	    2024-07-08 14:28:16
+            5652c913-782c-4f47-b1ad-99f52066711d	2024-07-08	268596	        	Camila Orias	CANCELED	2024-07-08 13:18:13
+
+
+            
+         */
+			AND b.name = 'Argūello' 
+         and p.type in ('AUTODEBIT'
+								,'CASH'
+								,'CREDIT'
+								,'DEBIT'
+								,'FEES'
+								,'MOBBEX')
+			AND t.datetime='2024-07-08'					
+      /*   and   t.datetime >= '2024-07-22' 
+			and t.datetime < '2024-07-24';
+        */ 
+         
+/* salesUsers */
+
+select
+       b.id AS box_id,
+       b.name AS box_name,
+       u.id user_id,
+       u.name AS user_name,
+       if(datediff(t.datetime,tr.created)<30,1,0) as new_trainee,
+       i.id item_id,
+       i.name AS item_name,
+       ct.id credit_type_id,
+       ct.name AS credit_type_name,
+       p.id payment_id,
+       p.name AS payment_name,
+       date_format(t.datetime,'ymd'),
+       count(1) AS sale_quantity,
+       sum(t.amount) AS sale_amount
+   from transactions t,
+       transaction_types tt,
+       transactions_items ti,
+       transactions_payments tp,
+       trainees_credits tc,
+       boxes b,
+       trainees tr,
+       credits_types ct,
+       payments p,
+       users u,
+       items i
+   where t.transaction_type_id = tt.id
+       and t.box_id = b.id
+       and t.trainee_id = tr.id
+       and t.user_id = u.id
+       and t.id = ti.transaction_id
+       and t.id = tp.transaction_id
+       and t.id = tc.transaction_id
+       and tp.payment_id = p.id
+       and ti.item_id = i.id
+       and tc.credit_type_id = ct.id
+       and tt.type = 'SALES'
+       and tt.move_tax = 1
+       and t.status = 'ACTIVE'
+       and p.type in ('AUTODEBIT','CASH','CREDIT','DEBIT','FEES','MOBBEX')
+       and i.id in ('44f465d7-4441-4f03-a9d5-f81aceabd4ad','d7ef9e27-3a8a-4a08-9c47-d21c7cd1d776','f3c6a330-8085-49d3-97c4-43652b0818b6')
+       /* 
+		select * from items i
+		where i.id in ('44f465d7-4441-4f03-a9d5-f81aceabd4ad'
+							,'d7ef9e27-3a8a-4a08-9c47-d21c7cd1d776'
+							,'f3c6a330-8085-49d3-97c4-43652b0818b6')
+       */
+       and t.datetime='2024-07-08'
+		/* and t.company_id='' */
+		 and t.box_id='c4b74d5a-4902-47d9-843b-da7e52547cf3'
+ 		/* and t.user_id=''*/
+   group by  b.id, u.id, new_trainee, i.id, ct.id, p.id, date_format(t.datetime,'ymd')
+   order by b.name, u.name, new_trainee, i.name, ct.name, p.name;
+       
+/*        
+select * 
+	from trainees t
+	where t.name ='Camila Orias'
+
+	t.created 2024-05-21 09:40:32 
+	t.id 6f871501-271b-4146-b027-41e514bd4868
+
+     */
+
+
+ SELECT tr.user_id,
+        u.name,
+        b.name AS box_name,
+        tr.created AS tr_created,
+        tc.datetime AS tc_created,
+        tr.name AS trainee
+        FROM trainees tr, trainees_credits tc, users u, boxes b
+        WHERE tr.user_id = u.id
+        AND b.id = tr.box_id
+        AND tc.trainee_id = tr.id
+        AND u.status = 'ACTIVE'
+        GROUP BY tr.id, u.id
+        ORDER BY b.name, u.name, tc.datetime desc;
+       
+/*             */
+
+SELECT u.id as user_id, u.name as user_name, b.name as box_name, COUNT(tr.id) AS total, b.id as box_id
+        FROM trainees tr, users u, boxes b
+        WHERE ISNULL(tr.last_purchase)
+        AND tr.box_id = b.id
+        AND tr.user_id = u.id
+        AND tr.status = 'ACTIVE'
+        GROUP BY b.id, u.id";
+                        
+
