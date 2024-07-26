@@ -1,0 +1,50 @@
+-- db
+CREATE TABLE `feedback` (
+	`feedback_id` INT(11) NULL DEFAULT NULL,
+	`cust_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`email` VARCHAR(150) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`rating` INT(11) NULL DEFAULT NULL,
+	`remarks` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci'
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
+
+-- SQL -- mostrando mails validos.
+SELECT  
+	CHAR_LENGTH((email))
+	,email
+	,REVERSE(email)
+	,SUBSTRING_INDEX(email, '.', 1) AS email_revertido
+	,SUBSTRING_INDEX(REVERSE(email), '.', 1) AS email_revertido
+	,CHAR_LENGTH(SUBSTRING_INDEX(REVERSE(email), '.', 1)) AS email_revertido
+FROM feedback
+WHERE email RLIKE	 '^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z][a-zA-Z0-9_.-]*\\.[a-zA-Z]+$'
+AND email NOT RLIKE	 '[^a-zA-Z0-9_.-]@[a-zA-Z][a-zA-Z0-9_.-]*\\.[a-zA-Z]+$'
+AND CHAR_LENGTH(SUBSTRING_INDEX(REVERSE(email), '.', 1)) BETWEEN 1 AND 3;
+
+-- SQL --
+
+\begin
+CHAR\_LENGTH((email)) | email | REVERSE(email) | email\_revertido | email\_revertido | email\_revertido\\ 
+|19| | keyaan.TE@gmail.com | moc.liamg@ET.naayek | keyaan | moc | |3|\\ 
+|17| | Ashar-@hotmail.DE | ED.liamtoh@-rahsA | Ashar-@hotmail | ED | |2|\\ 
+|16| | zoya@techTFQ.org | gro.QFThcet@ayoz | zoya@techTFQ | gro | |3|\\ 
+|20| | ayaan123@company.net | ten.ynapmoc@321naaya | ayaan123@company | ten | |3|\\ 
+|11| | i@gmail.com | moc.liamg@i | i@gmail | moc | |3|\\ 
+\end
+
+
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (1, 'Zohan', 'zohan@2024@gmail.com', 4, 'good');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (2, 'Keyaan', 'keyaan.TE@gmail.com', 5, 'very good');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (3, 'Zayn', 'ZAYN...@gmail', 3, 'ok');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (4, 'Emir', 'emir-#1@outlook.com', 4, 'ok');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (5, 'Ashar', 'Ashar-@hotmail.DE', 4, 'nice');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (6, 'Zoya', 'zoya@techTFQ.org', 4, 'great');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (7, 'Kabir', 'kabir.com@-gmail.com', 2, 'bad');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (8, 'Ayaan', 'ayaan123@company.net', 1, 'poor');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (9, 'Meir', 'meir123@', 2, 'poor');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (10, 'Noah', 'noah_.com@.com', 4, 'poor');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (11, 'Idris', 'i@gmail.com', 5, 'excellent');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (12, 'Arhaan', 'arhaan$gmail.com', 5, 'awesome');
+INSERT INTO `feedback` (`feedback_id`, `cust_name`, `email`, `rating`, `remarks`) VALUES (13, 'Abrar', 'abrar123@gmail.comm', 3, 'awesome');
