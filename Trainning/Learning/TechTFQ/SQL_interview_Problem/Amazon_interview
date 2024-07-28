@@ -1,0 +1,91 @@
+
+-- 
+/* Debido a inconvenientes con la consulta en last_value esta invertido la seleccion del first_value desc */
+
+WITH cte AS
+			(SELECT *, ROW_NUMBER() over(PARTITION BY employee ORDER BY employee , dates) AS rn
+			FROM emp_attendance
+			),
+		cte_present as
+			(SELECT *, ROW_NUMBER() over(PARTITION BY employee ORDER BY employee , dates)
+			,rn - ROW_NUMBER() over(PARTITION BY employee ORDER BY employee , dates) AS flag
+			FROM cte WHERE status='PRESENT'
+			),
+		cte_absent as
+			(SELECT *, ROW_NUMBER() over(PARTITION BY employee ORDER BY employee , dates) 
+			,rn - ROW_NUMBER() over(PARTITION BY employee ORDER BY employee , dates) AS flag
+			FROM cte WHERE status='ABSENT'	
+			)
+		
+SELECT employee
+	,FIRST_VALUE(dates) over(PARTITION BY employee, flag ORDER BY employee, dates) AS from_date
+	,FIRST_VALUE(dates) over(PARTITION BY employee, flag ORDER BY employee, dates desc ) AS to_date
+	/*
+	, LAST_VALUE(dates) over(PARTITION BY employee, flag ORDER BY employee, dates
+										RANGE BETWEEN unbounded preceding AND unbounded following) AS to_date
+	*/
+	, status
+FROM cte_present
+UNION 
+SELECT employee
+	, FIRST_VALUE(dates) over(PARTITION BY employee, flag ORDER BY employee, dates) AS from_date
+	, FIRST_VALUE(dates) over(PARTITION BY employee, flag ORDER BY employee, dates desc ) AS to_date
+	/*
+	, LAST_VALUE(dates) over(PARTITION BY employee, flag ORDER BY employee, dates
+										RANGE BETWEEN unbounded preceding AND unbounded following) AS to_date
+	*/
+	, status
+FROM cte_absent
+
+
+
+
+
+
+
+
+
+
+
+
+-- Resultado
+employee	from_date	to_date	status
+A1	2024-01-01	2024-01-03	PRESENT
+A1	2024-01-05	2024-01-06	PRESENT
+A1	2024-01-10	2024-01-10	PRESENT
+A2	2024-01-06	2024-01-07	PRESENT
+A2	2024-01-09	2024-01-09	PRESENT
+A1	2024-01-04	2024-01-04	ABSENT
+A1	2024-01-07	2024-01-09	ABSENT
+A2	2024-01-08	2024-01-08	ABSENT
+A2	2024-01-10	2024-01-10	ABSENT
+
+
+
+
+
+--
+drop table if exists emp_attendance;
+create table emp_attendance
+(
+	employee 	varchar(10),
+	dates 		date,
+	status 		varchar(20)
+);
+insert into emp_attendance values('A1', '2024-01-01', 'PRESENT');
+insert into emp_attendance values('A1', '2024-01-02', 'PRESENT');
+insert into emp_attendance values('A1', '2024-01-03', 'PRESENT');
+insert into emp_attendance values('A1', '2024-01-04', 'ABSENT');
+insert into emp_attendance values('A1', '2024-01-05', 'PRESENT');
+insert into emp_attendance values('A1', '2024-01-06', 'PRESENT');
+insert into emp_attendance values('A1', '2024-01-07', 'ABSENT');
+insert into emp_attendance values('A1', '2024-01-08', 'ABSENT');
+insert into emp_attendance values('A1', '2024-01-09', 'ABSENT');
+insert into emp_attendance values('A1', '2024-01-010', 'PRESENT');
+insert into emp_attendance values('A2', '2024-01-06', 'PRESENT');
+insert into emp_attendance values('A2', '2024-01-07', 'PRESENT');
+insert into emp_attendance values('A2', '2024-01-08', 'ABSENT');
+insert into emp_attendance values('A2', '2024-01-09', 'PRESENT');
+insert into emp_attendance values('A2', '2024-01-010', 'ABSENT');
+
+SELECT * from emp_attendance;

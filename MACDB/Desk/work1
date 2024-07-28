@@ -1,0 +1,88 @@
+SELECT * FROM salas
+
+SELECT * FROM tesorerias 
+WHERE sala = '29' ORDER BY id DESC 
+LIMIT 10
+
+SELECT * FROM tesoreria_movs
+WHERE sala = '29'ORDER BY id DESC 
+LIMIT 50
+
+SELECT * FROM tes_admin_movs
+WHERE sala = '34'ORDER BY id DESC 
+LIMIT 50
+
+SELECT * FROM tesoreria_tipos WHERE id = '2'
+
+SELECT * FROM rendicions
+WHERE sala = '4' ORDER BY id DESC 
+LIMIT 10
+
+SELECT * FROM rendicion_tipos
+WHERE sala = '29' ORDER BY id DESC 
+LIMIT 10
+
+SELECT * FROM cajas 
+
+WHERE sala = '29' ORDER BY id DESC 
+LIMIT 10
+
+GROUP BY estado
+
+SELECT * FROM mov_cupons
+SELECT * FROM cupones
+
+ WHERE movimiento_id = '1952117'
+ 
+ 
+ SELECT * FROM activos
+ WHERE sala  = '29'
+
+/*  2  */ 
+SELECT * 
+FROM users u
+WHERE u.name LIKE '%palavecino%'
+
+SELECT * 
+FROM users u
+WHERE u.id = '353'
+
+SELECT * 
+FROM activos a
+WHERE a.sala = '4'
+
+/*  3   */
+
+SELECT * FROM rendicions r
+WHERE r.sala = '29'
+AND r.fecha LIKE '2024-07-16%';
+
+SELECT * FROM rendicion_tipos rt 
+WHERE rt.sala = '29'
+AND rt.rendicion = '13965'
+
+
+/*    4  */
+
+
+
+SELECT * FROM adicionals  /* adicionals  cupones*/
+ WHERE tesoreria_mov_id = '1944470'
+ 
+ 
+SELECT * FROM cajas 
+WHERE sala = '2' ORDER BY id DESC 
+LIMIT 10
+
+SELECT * FROM automaticos 
+WHERE sala = '29' ORDER BY id DESC 
+LIMIT 10
+
+
+SELECT * FROM kioscos
+
+SELECT * FROM automaticos 
+GROUP BY estado
+
+SELECT * FROM mon_exes 
+WHERE mov > '1952047'

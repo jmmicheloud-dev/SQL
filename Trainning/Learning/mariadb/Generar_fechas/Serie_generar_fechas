@@ -1,0 +1,11 @@
+-- Serie fechas 
+
+--	2021-11-29 // date<=CURRENT_DATE
+
+WITH RECURSIVE nrows(date) AS (
+                                SELECT MAKEDATE(2021,333) 
+                                UNION ALL 
+                                SELECT DATE_ADD(date,INTERVAL 1 day) 
+                                FROM nrows WHERE  date<=CURRENT_DATE
+)
+SELECT date FROM nrows;

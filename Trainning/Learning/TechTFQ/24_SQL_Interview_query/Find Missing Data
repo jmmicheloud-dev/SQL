@@ -1,0 +1,46 @@
+-- 
+
+
+WITH recursive cte AS
+	(SELECT MIN(serial_no) AS n FROM invoice
+	union
+	SELECT (n+1) AS n
+	FROM cte
+	WHERE n < (SELECT MAX(serial_no)FROM invoice))
+
+Select * FROM cte
+except 
+SELECT serial_no FROM invoice;
+
+--
+"n"
+"330116"
+"330117"
+"330118"
+"330119"
+"330123"
+"330124"
+
+--
+
+
+-- Volcando estructura para tabla test2.invoice
+CREATE TABLE IF NOT EXISTS `invoice` (
+  `serial_no` int(255) DEFAULT NULL,
+  `inoice_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla test2.invoice: ~5 rows (aproximadamente)
+/*!40000 ALTER TABLE `invoice` DISABLE KEYS */;
+REPLACE INTO `invoice` (`serial_no`, `inoice_date`) VALUES
+	(330115, '2024-03-01'),
+	(330120, '2024-03-01'),
+	(330121, '2024-03-01'),
+	(330122, '2024-03-02'),
+	(330125, '2024-03-02');
+/*!40000 ALTER TABLE `invoice` ENABLE KEYS */;
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
