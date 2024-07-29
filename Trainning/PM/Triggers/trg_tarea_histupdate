@@ -1,0 +1,15 @@
+
+DELIMITER //
+CREATE TRIGGER tareas_updt
+BEFORE UPDATE ON tareas
+FOR EACH ROW
+
+BEGIN
+    UPDATE historial_tareas
+    SET hasta = NOW()
+    WHERE tarea_id = OLD.id
+    AND hasta IS NULL;
+    
+    INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)
+	 VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());
+END

@@ -1,0 +1,29 @@
+SELECT 
+ 	t.id
+ 	,t.descripcion
+
+ 	,ht.desde
+ 	,ht.hasta
+ 	,u.first_name
+ 	,ht.observaciones
+FROM tareas t
+LEFT JOIN historial_tareas ht ON ht.tarea_id=t.id
+LEFT JOIN users u ON u.id=ht.user_id
+WHERE t.id ='37'
+GROUP BY ht.id
+
+
+-- pruebas 
+SELECT 
+ 	t.id
+ 	,t.descripcion
+
+ 	,ht.desde
+ 	,ht.hasta
+ 	,u.first_name
+ 	,ht.observaciones
+FROM tareas t
+LEFT JOIN historial_tareas ht ON ht.tarea_id=t.id
+LEFT JOIN users u ON u.id=ht.user_id
+WHERE t.id ='56'
+GROUP BY ht.id

@@ -13,44 +13,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
--- Volcando estructura de base de datos para information_schema
-CREATE DATABASE IF NOT EXISTS `information_schema` /*!40100 DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci */;
-USE `information_schema`;
-
--- Volcando estructura para tabla information_schema.TRIGGERS
-CREATE TEMPORARY TABLE IF NOT EXISTS `TRIGGERS` (
-  `TRIGGER_CATALOG` varchar(512) NOT NULL,
-  `TRIGGER_SCHEMA` varchar(64) NOT NULL,
-  `TRIGGER_NAME` varchar(64) NOT NULL,
-  `EVENT_MANIPULATION` varchar(6) NOT NULL,
-  `EVENT_OBJECT_CATALOG` varchar(512) NOT NULL,
-  `EVENT_OBJECT_SCHEMA` varchar(64) NOT NULL,
-  `EVENT_OBJECT_TABLE` varchar(64) NOT NULL,
-  `ACTION_ORDER` bigint(4) NOT NULL,
-  `ACTION_CONDITION` longtext,
-  `ACTION_STATEMENT` longtext NOT NULL,
-  `ACTION_ORIENTATION` varchar(9) NOT NULL,
-  `ACTION_TIMING` varchar(6) NOT NULL,
-  `ACTION_REFERENCE_OLD_TABLE` varchar(64),
-  `ACTION_REFERENCE_NEW_TABLE` varchar(64),
-  `ACTION_REFERENCE_OLD_ROW` varchar(3) NOT NULL,
-  `ACTION_REFERENCE_NEW_ROW` varchar(3) NOT NULL,
-  `CREATED` datetime(2),
-  `SQL_MODE` varchar(8192) NOT NULL,
-  `DEFINER` varchar(384) NOT NULL,
-  `CHARACTER_SET_CLIENT` varchar(32) NOT NULL,
-  `COLLATION_CONNECTION` varchar(64) NOT NULL,
-  `DATABASE_COLLATION` varchar(64) NOT NULL
-) ENGINE=Aria DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci PAGE_CHECKSUM=0;
-
--- Volcando datos para la tabla information_schema.TRIGGERS: 2 rows
-/*!40000 ALTER TABLE `TRIGGERS` DISABLE KEYS */;
-REPLACE INTO `TRIGGERS` (`TRIGGER_CATALOG`, `TRIGGER_SCHEMA`, `TRIGGER_NAME`, `EVENT_MANIPULATION`, `EVENT_OBJECT_CATALOG`, `EVENT_OBJECT_SCHEMA`, `EVENT_OBJECT_TABLE`, `ACTION_ORDER`, `ACTION_CONDITION`, `ACTION_STATEMENT`, `ACTION_ORIENTATION`, `ACTION_TIMING`, `ACTION_REFERENCE_OLD_TABLE`, `ACTION_REFERENCE_NEW_TABLE`, `ACTION_REFERENCE_OLD_ROW`, `ACTION_REFERENCE_NEW_ROW`, `CREATED`, `SQL_MODE`, `DEFINER`, `CHARACTER_SET_CLIENT`, `COLLATION_CONNECTION`, `DATABASE_COLLATION`) VALUES
-	('def', 'pm2', 'tareas_hist', 'INSERT', 'def', 'pm2', 'tareas', 1, NULL, 'BEGIN	\r\n	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)\r\n	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());\r\nEND', 'ROW', 'AFTER', NULL, NULL, 'OLD', 'NEW', '2024-07-01 10:08:15.65', 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION', 'root@localhost', 'utf8mb4', 'utf8mb4_general_ci', 'utf8mb4_general_ci'),
-	('def', 'pm2', 'tareas_updt', 'UPDATE', 'def', 'pm2', 'tareas', 1, NULL, 'BEGIN	\r\n	INSERT INTO historial_tareas(tarea_id,estado,user_id,desde)\r\n	VALUES(NEW.id,NEW.estado_id,NEW.user_id,NOW());\r\nEND', 'ROW', 'AFTER', NULL, NULL, 'OLD', 'NEW', '2024-07-01 10:08:02.16', 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION', 'root@localhost', 'utf8mb4', 'utf8mb4_general_ci', 'utf8mb4_general_ci');
-/*!40000 ALTER TABLE `TRIGGERS` ENABLE KEYS */;
-
-
 -- Volcando estructura de base de datos para pm2
 CREATE DATABASE IF NOT EXISTS `pm2` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `pm2`;
@@ -58,19 +20,23 @@ USE `pm2`;
 -- Volcando estructura para tabla pm2.edt
 CREATE TABLE IF NOT EXISTS `edt` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `gestion` int(11) DEFAULT NULL,
+  `gestiones` int(11) DEFAULT NULL,
   `tema` varchar(50) DEFAULT NULL,
   `detalle` varchar(250) DEFAULT NULL,
   `codigo` varchar(50) DEFAULT NULL,
   UNIQUE KEY `codigo` (`codigo`),
   KEY `Índice 1` (`id`) USING BTREE,
-  KEY `FK_EDT_Gestion` (`gestion`) USING BTREE,
-  CONSTRAINT `FK_edt_gestion` FOREIGN KEY (`gestion`) REFERENCES `gestion` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `FK_EDT_Gestion` (`gestiones`) USING BTREE,
+  CONSTRAINT `FK_edt_gestion` FOREIGN KEY (`gestiones`) REFERENCES `gestion` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla pm2.edt: ~20 rows (aproximadamente)
+-- Volcando datos para la tabla pm2.edt: ~24 rows (aproximadamente)
 /*!40000 ALTER TABLE `edt` DISABLE KEYS */;
-REPLACE INTO `edt` (`id`, `gestion`, `tema`, `detalle`, `codigo`) VALUES
+REPLACE INTO `edt` (`id`, `gestiones`, `tema`, `detalle`, `codigo`) VALUES
+	(28, 7, 'Reuniones', '', '7.2'),
+	(29, 7, 'Contacto - comunicaciones', '', '7.5'),
+	(30, 7, 'Mail de Gestion Semanal', '', '7.3'),
+	(4, 8, 'Molinetes', '', '8.0'),
 	(5, 1, 'CRM', '', '1.5'),
 	(6, 1, 'Mobbex', '', '1.15'),
 	(7, 1, 'Molinetes', '', '1.16'),
@@ -125,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `gestion` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla pm2.gestion: ~7 rows (aproximadamente)
+-- Volcando datos para la tabla pm2.gestion: ~8 rows (aproximadamente)
 /*!40000 ALTER TABLE `gestion` DISABLE KEYS */;
 REPLACE INTO `gestion` (`id`, `area`, `detalle`, `estado`) VALUES
 	(1, 'Sistema', NULL, 'activo'),
@@ -133,6 +99,7 @@ REPLACE INTO `gestion` (`id`, `area`, `detalle`, `estado`) VALUES
 	(3, 'Gestion de Usuarios', NULL, 'activo'),
 	(4, 'App', NULL, 'activo'),
 	(5, 'UI / UX', NULL, 'activo'),
+	(7, 'Gestion PM', NULL, 'activo'),
 	(8, 'Molinetes', NULL, 'activo'),
 	(9, 'Administracion', NULL, 'activo');
 /*!40000 ALTER TABLE `gestion` ENABLE KEYS */;
@@ -145,13 +112,13 @@ CREATE TABLE IF NOT EXISTS `historial_tareas` (
   `user_id` int(11) DEFAULT NULL,
   `desde` varchar(50) DEFAULT NULL,
   `hasta` varchar(50) DEFAULT NULL,
-  `observaciones` varchar(250) DEFAULT NULL,
+  `observaciones` longtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_historial_tareas_tareas` (`tarea_id`),
   CONSTRAINT `FK_historial_tareas_tareas` FOREIGN KEY (`tarea_id`) REFERENCES `tareas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla pm2.historial_tareas: ~48 rows (aproximadamente)
+-- Volcando datos para la tabla pm2.historial_tareas: ~102 rows (aproximadamente)
 /*!40000 ALTER TABLE `historial_tareas` DISABLE KEYS */;
 REPLACE INTO `historial_tareas` (`id`, `tarea_id`, `estado`, `user_id`, `desde`, `hasta`, `observaciones`) VALUES
 	(1, 1, 4, 12, '2024-01-15 10:11:01', NULL, NULL),
@@ -201,7 +168,61 @@ REPLACE INTO `historial_tareas` (`id`, `tarea_id`, `estado`, `user_id`, `desde`,
 	(61, 31, 2, 3, '2024-06-03 13:59:04', '2024-06-05 13:59:04', NULL),
 	(62, 31, 2, 4, '2024-06-05 13:59:04', '2024-06-07 13:59:04', NULL),
 	(63, 31, 4, 3, '2024-06-07 13:59:04', '2024-06-07 13:59:04', NULL),
-	(65, 30, 5, 2, '2024-06-24 19:51:20', NULL, NULL);
+	(65, 30, 5, 2, '2024-06-24 19:51:20', NULL, NULL),
+	(66, 30, 5, 2, '2024-06-24 19:51:20', '2024-07-28 15:08:19', NULL),
+	(67, 32, 8, 3, '2024-06-17 07:43:10', '2024-07-28 15:08:19', NULL),
+	(68, 32, 8, 2, '2024-06-21 07:43:10', '2024-06-21 07:43:10', 'Validacion ok en espera de ok para gestionar'),
+	(69, 32, 1, 4, '2024-06-21 07:43:10', '2024-06-21 07:43:10', NULL),
+	(71, 33, 0, 3, '2024-06-21 07:43:10', '2024-06-21 07:43:10', 'actions en process y tomar solo las pending'),
+	(75, 34, 0, 3, '2024-06-21 07:43:10', '2024-06-21 07:43:10', 'demonio para las actions en process las vuelva a pending'),
+	(78, 35, 4, 10, '2024-06-14 08:04:31', NULL, 'presentacion UX para Integrar mobbex al proceso de compra '),
+	(79, 36, 0, 10, '2024-06-14 08:04:31', NULL, 'Se presenta en nuevo estilo en integracin de ventas'),
+	(80, 37, 2, 3, '2024-06-25 08:24:02', NULL, 'Mejorar la UI en Molinetes placas graficas pedidas a Butaca11\r\n'),
+	(81, 36, 0, 3, '2024-06-18 08:04:31', NULL, 'Figma para nuevo estilo en integracin de ventas'),
+	(82, 38, 4, 2, '2024-06-07', NULL, 'Evitar errores y demora en lectura QR'),
+	(83, 39, 0, 3, '2024-06-06 08:04:31', NULL, 'Mostrar en perfil recepcionista listado errores\r\n'),
+	(84, 39, 2, 2, '2024-07-02 08:40:14', NULL, NULL),
+	(85, 39, 3, 3, '2024-07-02 08:43:00', NULL, NULL),
+	(86, 39, 2, 2, '2024-06-21 08:43:39', NULL, 'Se continua detalles a recepcionistas molinetes'),
+	(87, 39, 4, 2, '2024-06-28 08:43:39', NULL, 'Completado detalles a recepcionistas molinetes'),
+	(90, 40, 6, 4, '2024-04-02 09:41:52', NULL, NULL),
+	(91, 41, 4, 3, '2024-07-02 20:25:45', NULL, 'Gestion sobre cantidad alumnos estadisticas web (Marco)'),
+	(92, 42, 2, 3, '2024-07-02 20:27:34', NULL, 'A pedido de Maxi analizar de las 3 opciones mobbex en sistemas'),
+	(93, 43, 2, 3, '2024-07-03 07:55:52', NULL, 'Verificar por error no corren automaticamente'),
+	(95, 43, 4, 3, '2024-07-05 08:21:20', NULL, 'Se verifica cargan datos a la base'),
+	(96, 44, 2, 3, '2024-07-04 10:37:23', NULL, 'Varios navegadores y no hace foco en validacion'),
+	(97, 44, 4, 3, '2024-07-04 08:39:33', NULL, 'Se cierran los navegadores y se verifica que servicio funciona ok'),
+	(98, 45, 4, 3, '2024-07-03 08:51:42', NULL, 'Contacto por definiciones'),
+	(99, 46, 2, 3, '2024-07-05 08:57:51', '2024-07-05 10:57:51', 'Se verifica navegador y servicios ok se refresca para foco en validacion'),
+	(100, 46, 4, 3, '2024-07-05 09:04:01', '2024-07-05 10:40:01', 'Probablemente se sale del navegador o foco de validacion'),
+	(101, 47, 2, 3, '2024-07-05 08:00:54', '2024-07-05 08:20:54', 'Se plantea transparecia y trabajo en equipo. Se hace detalle de tabajos y estatus. NPS cancelado, Ocupacion completado, Acciones de recepcionista con validacion de camila, carga por tarea, fin de meet a 20 minutos de comenzada.'),
+	(102, 47, 4, 3, '2024-07-05 08:19:04', NULL, NULL),
+	(106, 48, 4, 3, '2024-07-05 10:44:58', '2024-07-05 12:30:58', 'Se verifica listado usuarios y se gestiona derivados por whatsapp... problemas ingreso a molinetes alumno sin internet problama de qr'),
+	(107, 49, 4, 3, '2024-07-09 10:58:48', NULL, 'Falla en codigo devices controller molinetes '),
+	(108, 50, 4, 3, '2024-07-11 11:01:06', '2024-07-12 11:01:06', 'Recopilar y verificar documentacion para embeber mobbex a briskbox'),
+	(109, 50, 2, 2, '2024-07-12 11:01:06', NULL, 'primera parte de integracion de mobbex a briskbox'),
+	(110, 51, 4, 3, '2024-07-15 12:34:57', '2024-07-15 14:34:57', 'Gestionar con David para identificar plaqueta y conextor para pulsadores molinetes salida '),
+	(113, 52, 4, 3, '2024-07-19 08:00:56', '2024-07-19 09:02:56', 'Se dialoga sobre encuestas para  largar el miercoles. Y ademas se plantea  la necesidad de generar una vista con datos historicos de planes vegentes.'),
+	(114, 53, 4, 3, '2024-07-19 11:23:00', '2024-07-19 13:30:00', 'Gestion usuarios duplicado  y venta cancelada 48070175 Bruno , 93720835 Camila\r\n'),
+	(115, 54, 2, 2, '2024-07-19 16:24:47', '2024-07-19 17:24:47', 'Max gestion mobbex y  qr beneficios.'),
+	(116, 55, 4, 2, '2024-07-19 17:25:00', '2024-07-19 19:25:00', 'Se soluciona qr beneficio para web app queda pendiente apk'),
+	(117, 56, 2, 3, '2024-07-19 16:30:07', '2024-07-19 18:30:07', 'Estadisticas de activos historicos'),
+	(118, 56, 1, 4, '2024-07-19 18:30:07', '2024-07-19 18:30:07', 'Estadisticas de activos historicos validar Franco'),
+	(119, 57, 4, 3, '2024-07-19 10:38:24', '2024-07-19 12:38:24', 'Estadistica vta/recep no muestra vta cancelada o pendiente'),
+	(120, 57, 2, 4, '2024-07-23 14:40:00', '2024-07-23 16:40:00', 'Estadistica vta/recep no muestra vta 48070175 Bruno\n93720835 Camila clte +30d o ventas anteriores canceladas revisar con franco\n '),
+	(121, 30, 2, 2, '2024-07-24 18:00:27', '2024-07-24 22:00:27', 'NPS se retoma y se prepara maquetado para presentacion y validacion. Detallando que si mantenemos una linea el espacio entre cada check puede complicar la seleccion para un dedo grande y sugerencia partirlo en 2 lineas.'),
+	(122, 58, 4, 3, '2024-07-24 18:14:47', '2024-07-24 19:14:47', 'Se coordina reunion con Franco por gestiones Briskbox.fit'),
+	(123, 58, 5, 4, '2024-07-26 10:05:04', NULL, 'Franco cancela la reunion '),
+	(124, 59, 4, 3, '2024-07-26 08:01:16', '2024-07-26 09:05:16', 'Se detalla en la reunion puntos a trabajar segun indicaciones de Marco enviado en mail. \r\nSe explica que la consulta de alumnos activos historico esta presentada para validacion el mismo dia que se planteo. \r\nSe Muestra maquetado de NPS y se informa particularidades de tiempo 2 DGMax y que mejor en 2 lineas pero queda validar que no se pasen para abajo lo checks. \r\nQue se realizara una prueba beta y luego ver avances.\r\nSe plantea estadisticas fuera de la gestion servidor pricipal pero no me hago entender.\r\nSe informa la logica de nuevo/renovacion en recepcionista estadisticas.'),
+	(126, 37, 2, 11, '2024-06-26 11:04:02', '2024-06-26 12:04:02', 'En meet se comunican los requerimientos par UX molinetes'),
+	(127, 37, 2, 11, '2024-07-03 11:33:02', '2024-07-03 13:00:02', 'Por whtsp consultan sobre especificaciones de animacion y video'),
+	(128, 37, 2, 3, '2024-07-05 15:07:01', '2024-07-05 18:00:01', 'Por pedido de Marco consultar por tiempos estimados de entrega'),
+	(129, 37, 2, 11, '2024-07-07 11:07:09', NULL, 'Informan de un delay en presentacion'),
+	(130, 37, 2, 3, '2024-07-16 11:09:02', '2024-07-16 12:50:02', 'Se consulta por novedades'),
+	(131, 37, 2, 11, '2024-07-16 11:09:02', '2024-07-18 11:09:02', 'En un par de dias envian primer avances'),
+	(132, 37, 2, 11, '2024-07-18 11:09:02', '2024-07-26 10:24:48', 'Envian link drive con presentables'),
+	(133, 37, 2, 3, '2024-07-29 07:12:37', NULL, 'Verificar presentables para gestionar con Maxi'),
+	(138, 60, 4, 3, '2024-07-26 10:24:48', '2024-07-26 12:24:48', 'Gestion usuarios duplicado  profe  baja y alumno con error');
 /*!40000 ALTER TABLE `historial_tareas` ENABLE KEYS */;
 
 -- Volcando estructura para tabla pm2.tareas
@@ -224,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `tareas` (
   CONSTRAINT `FK_tareas_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla pm2.tareas: ~31 rows (aproximadamente)
+-- Volcando datos para la tabla pm2.tareas: ~60 rows (aproximadamente)
 /*!40000 ALTER TABLE `tareas` DISABLE KEYS */;
 REPLACE INTO `tareas` (`id`, `gestion_id`, `estado_id`, `user_id`, `codigo_edt`, `descripcion`) VALUES
 	(1, 8, 4, 12, '8.2', 'PC en box'),
@@ -247,17 +268,46 @@ REPLACE INTO `tareas` (`id`, `gestion_id`, `estado_id`, `user_id`, `codigo_edt`,
 	(18, 8, 4, 5, '8.4', 'PC en box -usb a com'),
 	(19, 8, 4, 3, '8.4', 'Instalar codigo en la pc'),
 	(20, 8, 4, 3, '8.4', 'Configurar servicio local '),
-	(21, 8, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
-	(22, 8, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
-	(23, 8, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(21, 3, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(22, 3, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(23, 3, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
 	(24, 2, 4, 3, '2.1', 'v_liquidacion_3'),
 	(25, 2, 4, 2, '2.4', 'Encuestas en app'),
 	(26, 4, 4, 2, '4.2', 'Actualizacion necesaria en IOS y Android APK'),
 	(27, 4, 4, 2, '4.1', 'Disponible en Sotre Android y IOS app 3.3.2'),
 	(28, 4, 4, 2, '4.1', 'Disponible en Sotre Android y IOS app 3.3.3'),
 	(29, 4, 4, 2, '4.1', 'Disponible en Sotre Android y IOS app 3.3.5'),
-	(30, 2, 1, 2, '2.5', 'Encuestas NPS'),
-	(31, 2, 4, 3, '2.4', 'Encuestas en app testeo interno');
+	(30, 2, 2, 2, '2.5', 'Encuestas NPS'),
+	(31, 2, 4, 3, '2.4', 'Encuestas en app testeo interno'),
+	(32, 1, 1, 4, '1.5', 'Recepcionistas acciones'),
+	(33, 1, 0, 2, '1.5', 'Recepcionistas acciones - actions en process y tomar solo las pending'),
+	(34, 1, 0, 3, '1.5', 'Recepcionistas acciones - demonio para las actions en process las vuelva a pending'),
+	(35, 1, 4, 10, '1.15', 'Integrar ventas'),
+	(36, 5, 0, 3, '5.3', 'Estilo acorde Marca'),
+	(37, 5, 2, 3, '5.4', 'Mejorar la UI en Molinetes\r\n'),
+	(38, 1, 4, 2, '1.16', 'Mejora lectura QR'),
+	(39, 1, 4, 2, '1.16', 'Interaccion U. Molinetes\r\n'),
+	(40, 1, 6, 4, '1.17', 'Convenios Empresas'),
+	(41, 2, 4, 3, '2.1', 'Estadistica Alumnos'),
+	(42, 1, 2, 3, '1.15', 'Integracion en sistemas mobbex compra de creditos'),
+	(43, 2, 4, 3, '2.1', 'Gestion Procesos Nocturnos - error'),
+	(44, 8, 4, 3, '8.4', 'No permite ingreso molinetes'),
+	(45, 7, 4, 3, '7.5', 'Comunicacion por UX molinetes'),
+	(46, 8, 4, 3, '8.4', 'No permite ingreso molinetes'),
+	(47, 7, 4, 3, '7.2', 'Reunion meet - Update Lineas de Acción Sistema/APP BriskBox'),
+	(48, 3, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(49, 1, 4, 3, '1.16', 'Falla servidor molinetes'),
+	(50, 1, 2, 2, '1.15', 'Integracion mobbex'),
+	(51, 8, 4, 3, '8.0', 'Gestion Molinetes Pulsador Salida'),
+	(52, 7, 4, 3, '7.2', 'Reunion meet - Update Lineas de Acción Sistema/APP BriskBox'),
+	(53, 3, 4, 3, '3.1', 'Gestion de usuarios duplicados'),
+	(54, 1, 2, 2, '1.15', 'Integracion mobbex'),
+	(55, 4, 4, 2, '4.2', 'QR beneficios con problemas'),
+	(56, 2, 1, 4, '2.1', 'Estadisticas de activos historicos'),
+	(57, 2, 2, 3, '2.1', 'Estadistica venta por recep no muestra venta'),
+	(58, 7, 5, 4, '7.2', 'Se coordina reunion para el viernes 26 y luego se cancela por Franco'),
+	(59, 7, 4, 3, '7.2', 'Reunion meet - Update Lineas de Acción Sistema/APP BriskBox'),
+	(60, 3, 4, 3, '3.1', 'Gestion de usuarios duplicados');
 /*!40000 ALTER TABLE `tareas` ENABLE KEYS */;
 
 -- Volcando estructura para tabla pm2.users
@@ -290,6 +340,26 @@ REPLACE INTO `users` (`id`, `first_name`, `last_name`, `area`, `email`, `birth_d
 	(11, 'Sol', 'Avila', 'PM Butaca11', 'pm2@butacaonce.com;sol@cuestasbranding.com', NULL, NULL, NULL),
 	(12, 'Eugenio', NULL, 'Mantenimiento Briskbox', 'mantenimiento@briskbox.fit', NULL, NULL, NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+
+-- Volcando estructura para tabla pm2.wish_list
+CREATE TABLE IF NOT EXISTS `wish_list` (
+  `id` int(11) DEFAULT NULL,
+  `Detalle` varchar(250) DEFAULT NULL,
+  `gestion_id` int(11) DEFAULT NULL,
+  `estado` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  KEY `FK_wish_list_gestion` (`gestion_id`),
+  CONSTRAINT `FK_wish_list_gestion` FOREIGN KEY (`gestion_id`) REFERENCES `gestion` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla pm2.wish_list: ~3 rows (aproximadamente)
+/*!40000 ALTER TABLE `wish_list` DISABLE KEYS */;
+REPLACE INTO `wish_list` (`id`, `Detalle`, `gestion_id`, `estado`, `created_at`, `updated_at`) VALUES
+	(10, 'APP - Profe cargue planes de muscualcion por app y queden en el historial del alumno. Que se pueda cargar kg de cada movimiento para mostrar progresos', 4, NULL, '2023-05-03 08:58:00', NULL),
+	(11, 'App al anotarse en una actividad muestre el wod dentro del horario que uno está anotado', 4, NULL, '2023-05-03 08:58:00', NULL),
+	(9, 'Molinetes - Algunos alumnos vienen sin datos y no les toma el qr', 1, NULL, '2024-07-08 10:47:22', NULL);
+/*!40000 ALTER TABLE `wish_list` ENABLE KEYS */;
 
 -- Volcando estructura para disparador pm2.tareas_hist
 SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';

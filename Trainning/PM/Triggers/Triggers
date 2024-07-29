@@ -23,3 +23,59 @@ CREATE DEFINER=`root`@`localhost` TRIGGER historial_tareas
   AFTER UPDATE ON tareas FOR EACH ROW
     INSERT historial_tareas SET tareas = historial_tareas.tareas;
 
+/* tiggers para actualizar fecha en hasta y luego insertar una nueva linea */
+
+
+DELIMITER //
+CREATE TRIGGER trg_tarea_histupdate
+BEFORE UPDATE ON tareas
+FOR EACH ROW
+BEGIN
+    UPDATE tareas_hist
+    SET hasta = NOW()
+    WHERE tarea_id = OLD.id
+    AND hasta IS NULL;
+    
+    INSERT INTO tabla_historica (columna1, columna2, ..., hasta)
+    VALUES (OLD.columna1, OLD.columna2, ..., NOW());
+END//
+DELIMITER ;
+
+
+
+
+
+-- modelos
+
+DELIMITER //
+CREATE TRIGGER trg_actualiza_historico
+BEFORE UPDATE ON tabla_principal
+FOR EACH ROW
+BEGIN
+    UPDATE tabla_historica
+    SET hasta = NOW()
+    WHERE id = (SELECT MAX(id) FROM tabla_historica WHERE columna1 = OLD.columna1);
+    
+    INSERT INTO tabla_historica (columna1, columna2, ..., hasta)
+    VALUES (OLD.columna1, OLD.columna2, ..., NOW());
+END//
+DELIMITER ;
+
+
+UPDATE tabla_historica
+SET hasta = NOW()
+WHERE id = (SELECT MAX(id) FROM tabla_historica WHERE columna1 = OLD.columna1)
+AND hasta IS NULL;
+
+
+IF OLD.columna1 != NEW.columna1 THEN
+    UPDATE tabla_historica
+    SET hasta = NOW()
+    WHERE id = (SELECT MAX(id) FROM tabla_historica WHERE columna1 = OLD.columna1);
+END IF;
+
+UPDATE tabla_historica
+SET hasta = NOW()
+WHERE id_tarea = OLD.id_tarea
+AND hasta IS NULL;
+
