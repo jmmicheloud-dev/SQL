@@ -1,0 +1,37 @@
+--
+-- Stored Procedure is prepared SQL code that you can save
+
+--create
+
+DELIMITER $$
+CREATE PROCEDURE get_pending()
+BEGIN
+
+	SELECT 
+		 t.codigo_edt
+		,t.descripcion
+		,u.first_name
+		,e.nombre AS estado
+		,et.tema
+	FROM tareas t
+	LEFT join users u ON u.id=t.user_id
+	LEFT JOIN estados e ON e.id=t.estado_id
+	LEFT JOIN edt et ON et.codigo=t.codigo_edt
+	LEFT JOIN gestion g ON g.id=t.gestion_id
+	WHERE 1
+	AND e.nombre !='Completado' 
+	AND e.nombre !='Cancelado';
+END $$
+DELIMITER ;
+
+CALL get_pending();
+
+
+-- drop procedure
+
+DROP PROCEDURE get_pending()
+
+
+-- create procedure with parameters
+
+

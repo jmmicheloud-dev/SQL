@@ -9,10 +9,24 @@
             "server": "localhost",
             "port": 3307,
             "driver": "MariaDB",
-            "name": "localhost",
+            "name": "test2",
             "group": "localhost",
             "username": "rooto",
             "database": "test2"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3307,
+            "driver": "MariaDB",
+            "name": "pm2",
+            "database": "pm2",
+            "username": "rooto",
+            "password": "rooto"
         }
     ]
 }
