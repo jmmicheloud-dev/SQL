@@ -8,19 +8,25 @@ CREATE PROCEDURE get_pending()
 BEGIN
 
 	SELECT 
-		 t.codigo_edt
-		,t.descripcion
-		,u.first_name
-		,e.nombre AS estado
-		,et.tema
-	FROM tareas t
-	LEFT join users u ON u.id=t.user_id
+	MAX(ht.id)
+	,ht.estado 
+	,e.nombre
+	,u.first_name
+	,ht.tarea_id
+	,g.area
+	,t.descripcion
+	/*, ht.observaciones*/
+	,ht.hasta
+	FROM historial_tareas ht
+
+	LEFT JOIN tareas t ON t.id=ht.tarea_id
 	LEFT JOIN estados e ON e.id=t.estado_id
-	LEFT JOIN edt et ON et.codigo=t.codigo_edt
-	LEFT JOIN gestion g ON g.id=t.gestion_id
-	WHERE 1
-	AND e.nombre !='Completado' 
-	AND e.nombre !='Cancelado';
+	LEFT JOIN users u ON u.id = t.user_id
+	LEFT JOIN gestion g ON g.id = t.gestion_id
+	WHERE t.estado_id !='4'
+	AND t.estado_id !='5'
+	GROUP BY ht.tarea_id
+	ORDER BY g.area
 END $$
 DELIMITER ;
 

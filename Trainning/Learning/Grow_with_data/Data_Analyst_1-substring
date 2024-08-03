@@ -1,0 +1,102 @@
+-- Data analyst
+
+
+-- NO FUNCIONA EN MARIADB 
+        -- SELECT 
+        --         club_id
+        --         , member_id
+        --         VALUE AS reward
+        --     FROM club
+        --     OUTER apply string_split(rewards,':') 
+
+
+/*    
+SELECT club_id, member_id, SUBSTRING_INDEX(rewards, ':', numbers.n) AS reward
+FROM club
+JOIN (
+    SELECT 1 AS n UNION ALL
+    SELECT 2 AS n UNION ALL
+    SELECT 3 AS n UNION ALL-- Añade más números según la cantidad máxima de rewards en una fila
+    SELECT 4 AS n
+) AS numbers
+ON CHAR_LENGTH(rewards) - CHAR_LENGTH(REPLACE(rewards, ':', '')) >= numbers.n - 1;
+
+*/
+
+WITH RECURSIVE SplitCte AS (
+		select 
+			club_id
+        ,member_id
+        ,SUBSTRING_INDEX(rewards, ':', 1) AS reward 
+			from club 
+			
+		union all	
+
+		SELECT
+        club_id,
+        member_id,
+        SUBSTRING(rewards, LENGTH(SUBSTRING_INDEX(rewards, ':', 1)) + 2,2)
+   	 FROM
+        club
+    	WHERE
+        rewards LIKE '%:%'
+	
+	   union all	
+	   
+		SELECT
+        club_id,
+        member_id,
+        SUBSTRING(rewards, LENGTH(SUBSTRING_INDEX(rewards, ':', 2)) + 2,2)
+   	 FROM
+        club
+    	WHERE
+        rewards LIKE '%:%:%'
+        
+		union all
+		
+		SELECT
+        club_id,
+        member_id,
+        -- SUBSTRING(rewards, LENGTH(SUBSTRING_INDEX(rewards, ':', 2)) + 5)
+        SUBSTRING(rewards, LENGTH(SUBSTRING_INDEX(rewards, ':', 3)) + 2,2)
+   	 FROM
+        club
+    	WHERE
+        rewards LIKE '%:%:%:%')
+
+, cte_2 AS(
+SELECT
+    club_id,
+    member_id,
+    reward,
+    CASE
+        WHEN reward IN ('MM', 'CI', 'CO') THEN 0.5
+        WHEN reward IN ('CD', 'CL', 'CM') THEN 1
+        ELSE 0
+    END AS points
+FROM
+    SplitCte)
+
+
+SELECT  
+	   club_id
+   	,member_id
+    	,sum(points)  
+	from cte_2
+	GROUP BY club_id
+
+
+
+
+create table club(
+club_id int,
+member_id int,
+rewards varchar(20));
+
+
+insert into club
+values(1001,210, null),(1001,211,'MM:CI'),(1002,215,'CD:CI:CM'),
+(1002,216,'CL:CM'),(1002,217,'MM:CM'),(1003,255,null),
+(1001,216,'CO:CD:CL:MM'),(1002,210,null)
+
+

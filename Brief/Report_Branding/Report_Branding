@@ -1,12 +1,22 @@
 # brandingCampaing  
-select CONCAT("vestido")
+SELECT CONCAT("vestido")
     ,c.name
     ,c.cuit
     ,CONCAT(c.address, c.addressNumber) AS direccion
     ,c.neighborhood AS Barrio
     ,c.addressOthers AS zona
     ,u.username AS Usuario
-    ,b.*
+    ,b.dateVisit
+    ,b.subCampaing
+    ,b.commercialActions
+    ,b.notes
+    ,b.onlineSale ,b.posPosnet ,b.posClover ,b.posLapos ,b.posMercadoPago ,b.posTodoPago
+    ,b.posTacaTaca ,b.posNPos, b.posOthers, b.posTypeQR ,b.posTypeClover ,b.cardVisa
+    ,b.cardMaster , b.cardCordobesa ,b.cardCabal ,b.cardNaranja , b.cardAmex 
+    ,b.cardOthers ,b.cardDues
+    ,b.plansNoInteres ,b.plansDiscount ,b.plansAhora
+    ,b.inquiriesId ,b.inquiryField1 ,b.inquiryValue1 ,b.inquiryField2 ,b.inquiryValue2
+   
 from brandingCampaing b, users u, contacts c
 where u.id=b.userId
 and   b.contactId=c.id
@@ -14,5 +24,5 @@ and   b.status='visited'
 and   c.status='enable'  
 and   u.status='enable'
 AND   year(b.dateVisit) = '2024'
-AND   month(b.dateVisit) = '06'
+AND   month(b.dateVisit) = '07'
 ORDER BY b.dateVisit
