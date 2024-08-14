@@ -1,3 +1,17 @@
+-- find the median employee salary for each department
+
+-- SELECT name
+-- 		,department
+-- 		,salary
+-- 		,PERCENTILE_DISC(0.5) withing	group(ORDER BY salary ASC) 
+-- 			over (PARTITION BY department) AS disc_percentile
+-- 		,PERCENTILE_CONT(0.5) withing group(ORDER BY salary ASC) 
+-- 			over (PARTITION BY department) AS cont_percentile
+-- FROM employee_salary
+
+--not for mariadb
+
+
 -- Calcular la media de salario por departamento
 
 WITH 	ranked_salaries AS (
