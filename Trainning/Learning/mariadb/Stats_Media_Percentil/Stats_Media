@@ -1,0 +1,62 @@
+-- Calcular la media de salario por departamento
+
+WITH 	ranked_salaries AS (
+    	SELECT 
+        name,
+        department,
+        salary,
+        ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary) AS row_num,
+        COUNT(*) OVER (PARTITION BY department) AS total_count
+    	FROM 
+        employee_salary
+		),
+		med AS (
+		SELECT 
+			name,
+			department,
+			salary,
+			(SELECT salary 
+			   FROM ranked_salaries AS rs2 
+			   WHERE rs2.department = rs1.department 
+			   AND rs2.row_num = FLOOR((rs1.total_count + 1) / 2)) AS disc_percentile,
+			(SELECT AVG(salary) 
+			   FROM ranked_salaries AS rs3 
+			   WHERE rs3.department = rs1.department 
+			   AND (rs3.row_num = FLOOR((rs1.total_count + 1) / 2) 
+			      OR rs3.row_num = CEIL((rs1.total_count + 1) / 2))) AS cont_percentile
+			FROM ranked_salaries AS rs1
+		)
+SELECT 	department
+			,MAX(disc_percentile) AS median_disc
+			,MAX(cont_percentile) AS median_cont
+	FROM med
+	GROUP BY department;
+
+
+
+-- 
+WITH ranked_salaries AS (
+    SELECT 
+        name,
+        department,
+        salary,
+        ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary) AS row_num,
+        COUNT(*) OVER (PARTITION BY department) AS total_count
+    FROM 
+        employee_salary
+)
+SELECT 
+    name,
+    department,
+    salary,
+    (SELECT salary 
+     FROM ranked_salaries AS rs2 
+     WHERE rs2.department = rs1.department 
+     AND rs2.row_num = FLOOR((rs1.total_count + 1) / 2)) AS disc_percentile,
+    (SELECT AVG(salary) 
+     FROM ranked_salaries AS rs3 
+     WHERE rs3.department = rs1.department 
+     AND (rs3.row_num = FLOOR((rs1.total_count + 1) / 2) 
+          OR rs3.row_num = CEIL((rs1.total_count + 1) / 2))) AS cont_percentile
+FROM 
+    ranked_salaries AS rs1;

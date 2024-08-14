@@ -1,0 +1,21 @@
+--employee_salary table
+create table employee_salary(
+name varchar(50),
+department varchar(50),
+salary int
+)
+
+
+--INSERT VALUES
+insert into employee_salary(name,department,salary)
+values('Lewis','Finance',11000),
+('Toto','Finance',5200),
+('George','Finance',6000),
+('James','Finance',4100),
+('Allison','Finance',3500),
+('Mick','Finance',2500),
+('Max','HR',9000),
+('Christian','HR',3600),
+('Checo','HR',5000),
+('Marko','HR',3400),
+('Adrian','HR',4000)
