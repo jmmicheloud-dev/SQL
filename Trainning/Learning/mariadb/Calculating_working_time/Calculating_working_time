@@ -1,0 +1,72 @@
+
+SELECT 
+    employee_id,
+    fecha,
+    SUM(diferencia_horas) AS horas_trabajadas
+FROM (
+    SELECT 
+        employee_id,
+        DATE(activity_time) AS fecha,
+        CASE 
+            WHEN activity_type = 'logout' THEN TIMESTAMPDIFF(SECOND, 
+                LAG(activity_time) OVER (PARTITION BY employee_id, DATE(activity_time) ORDER BY activity_time), 
+                activity_time
+            ) / 3600
+            ELSE 0
+        END AS diferencia_horas
+    FROM 
+        registro_actividades
+) AS subconsulta
+GROUP BY 
+    employee_id, 
+    fecha;
+
+
+
+
+----
+--
+
+/*
+
+SELECT * FROM swipe_tbl
+
+SELECT *
+		,CAST(activity_time AS DATE) AS date
+	FROM swipe_tbl
+
+SELECT *
+		,CAST(activity_time AS date) AS date
+		, lead(activity_time ,1) 
+			over(PARTITION BY employee_id	,CAST(activity_time AS DATE) ORDER BY activity_time) AS logout_time
+	FROM swipe_tbl
+
+*/
+/*
+WITH cte AS (
+					SELECT *
+						,CAST(activity_time AS date) AS date
+						, lead(activity_time ,1) 
+							over(PARTITION BY employee_id	,CAST(activity_time AS DATE) ORDER BY activity_time) AS logout_time
+					FROM swipe_tbl
+)
+SELECT employee_id
+		,date
+		,MIN(activity_time)
+		,MAX(logout_time)
+		, TIMESTAMPDIFF(HOUR, MIN(activity_time) ,MAX(logout_time)) total_hours
+	FROM cte
+	WHERE 1
+	GROUP BY employee_id,date
+
+
+TablaDesconocida
+---
+| employee_id | date | MIN(activity_time) | MAX(logout_time) | total_hours | 
+| ---: | --- | --- | --- | ---: | 
+| 1 | 2024-07-23 | 2024-07-23 08:00:00 | 2024-07-23 17:00:00 | 9 | 
+
+
+
+*/
+--
