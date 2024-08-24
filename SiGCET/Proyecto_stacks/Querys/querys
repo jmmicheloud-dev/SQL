@@ -1,0 +1,43 @@
+--
+
+-- vista de hoy y acumulado
+
+SELECT *
+	FROM stacks_audit sa
+	WHERE sa.fecha = CURDATE();
+
+SELECT *
+	FROM stacks_audit sa
+	WHERE sa.fecha = CURDATE() - INTERVAL 1 DAY;
+
+
+SELECT SUM(valor)
+	FROM stacks_audit sa
+	WHERE sa.fecha = CURDATE() - INTERVAL 1 DAY;
+
+-- creando vista o modificando valor de ayer
+/* 
+CREATE VIEW vista_ayer AS
+SELECT SUM(valor)
+	FROM stacks_audit sa
+	WHERE sa.fecha = CURDATE() - INTERVAL 1 DAY;
+	
+  */   
+
+/*   
+ALTER VIEW vista_ayer AS
+SELECT sa.sala_id
+		,SUM(valor)
+	FROM stacks_audit sa
+	WHERE sa.fecha = CURDATE() - INTERVAL 1 DAY;
+
+ */
+
+-- Consulta para mostar fecha y sala
+
+SELECT sa.sala_id
+		,sa.fecha
+		,(valor)
+	FROM stacks_audit sa
+	GROUP BY sa.fecha
+	ORDER BY sa.fecha 

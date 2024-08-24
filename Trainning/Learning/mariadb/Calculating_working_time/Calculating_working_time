@@ -70,3 +70,28 @@ TablaDesconocida
 
 */
 --
+
+CREATE TABLE swipe_tbl (
+    employee_id INT,
+    activity_type VARCHAR(10),
+    activity_time DATETIME
+);
+truncate table swipe_tbl
+----
+INSERT INTO swipe_tbl(employee_id, activity_type, activity_time) VALUES 
+(1, 'login', '2024-07-23 08:00:00.000'),
+(1, 'logout', '2024-07-23 12:00:00.000'),
+(1, 'login', '2024-07-23 13:00:00.000'),
+(1, 'logout', '2024-07-23 17:00:00.000'),
+(2, 'login', '2024-07-23 09:00:00.000'),
+(2, 'logout', '2024-07-23 11:00:00.000'),
+(2, 'login', '2024-07-23 13:00:00.000'),
+(2, 'logout', '2024-07-23 18:00:00.000'),
+(3, 'login', '2024-07-24 09:30:00.000'),
+(3, 'logout', '2024-07-24 11:30:00.000'),
+(3, 'login', '2024-07-24 12:30:00.000'),
+(3, 'logout', '2024-07-24 15:30:00.000'),
+(1, 'login', '2024-08-23 08:00:00.000'),
+(1, 'logout', '2024-08-23 12:00:00.000'),
+(1, 'login', '2024-08-23 13:00:00.000'),
+(1, 'logout', '2024-08-23 18:00:00.000')
