@@ -1,0 +1,153 @@
+
+/*  CREATE VIEW w_conversion_nuevo as
+*/
+WITH Numerado AS (
+    SELECT
+        t1.Fecha,
+        t1.Alumno,
+        t1.dni,
+        t1.trainee_id,
+        t1.Sucursal,
+        t1.Plan_vendido,
+        users.name AS Vendedor,
+        t1.`type`,
+        ROW_NUMBER() OVER (PARTITION BY t1.dni ORDER BY t1.Fecha ASC) AS rn,
+        CASE 
+            WHEN t1.Plan_vendido = 'Credito de cortesia' THEN 
+                ROW_NUMBER() OVER (PARTITION BY t1.dni ORDER BY t1.Fecha ASC) + 1 
+            ELSE 
+                ROW_NUMBER() OVER (PARTITION BY t1.dni ORDER BY t1.Fecha ASC)
+        END AS rn_corrected
+    FROM 
+    (
+        SELECT 
+            tc.datetime AS Fecha,
+            tr.name AS Alumno,
+            tr.id AS trainee_id,
+            u.dni,
+            b.name AS Sucursal,
+            ct.name AS Plan_vendido,
+            tc.`type`,
+            tc.expiration_date,
+            t.user_id
+        FROM 
+            trainees_credits tc
+        LEFT JOIN boxes b ON tc.box_id = b.id
+        LEFT JOIN trainees tr ON tc.trainee_id = tr.id
+        LEFT JOIN users_profiles up ON tr.id = up.trainee_id
+        LEFT JOIN users u ON up.user_id = u.id
+        LEFT JOIN credits_types ct ON tc.credit_type_id = ct.id
+        LEFT JOIN transactions t ON tc.transaction_id = t.id
+        WHERE 
+            tc.`status` <> 'PENDING' AND tc.`status` <> 'CANCELED'
+        ORDER BY 
+            tc.datetime DESC
+    ) t1
+    LEFT JOIN users ON t1.user_id = users.id
+)
+SELECT DISTINCT
+    t1.Alumno,
+    t1.dni,
+    t2.Sucursal,
+    t1.Created,
+    t1.Creado_por,
+    t2.Sale_date,
+    t2.Vendedor,
+    t2.Plan_vendido,
+    t2.`type`,
+    t3.Proof_class_date,
+    t3.Hora,
+    t3.Sucursal_proof_class
+FROM 
+(
+    SELECT 
+        t5.trainee_id,
+        t5.created AS Created,
+        t5.Alumno,
+        t5.Creado_por,
+        users.dni
+    FROM 
+    (
+        SELECT
+            trainees.id AS trainee_id,
+            trainees.created,
+            trainees.name AS Alumno,
+            users.name AS Creado_por
+        FROM 
+            trainees
+        LEFT JOIN users
+        ON trainees.user_id=users.id
+    ) t5
+    LEFT JOIN users_profiles
+    ON t5.trainee_id=users_profiles.trainee_id
+    LEFT JOIN users
+    ON users_profiles.user_id=users.id
+) t1
+LEFT JOIN 
+(
+    SELECT
+        Fecha AS Sale_date,
+        Alumno,
+        dni,
+        Sucursal,
+        Plan_vendido,
+        Vendedor,
+        `type`,
+        trainee_id
+    FROM
+        Numerado
+    WHERE
+        rn = 1 AND Plan_vendido <> 'Credito de cortesia'
+    UNION ALL
+    SELECT
+        Fecha AS Sale_date,
+        Alumno,
+        dni,
+        Sucursal,
+        Plan_vendido,
+        Vendedor,
+        `type`,
+        trainee_id
+    FROM
+        Numerado
+    WHERE
+        rn_corrected = 1 AND Plan_vendido = 'Credito de cortesia'
+) t2
+ON t1.trainee_id=t2.trainee_id
+LEFT JOIN 
+(
+    WITH RankedTrainees AS (
+        SELECT
+            trainees_clases.date,
+            clases.time,
+            trainees.name AS trainee_name,
+            users.dni,
+            boxes.name AS box_name,
+            clases_types.name AS clase_type,
+            trainees_clases.type AS clase_type_detail,
+            ROW_NUMBER() OVER (PARTITION BY users.dni ORDER BY trainees_clases.date) AS RowNum
+        FROM
+            trainees_clases
+            LEFT JOIN trainees ON trainees_clases.trainee_id = trainees.id
+            LEFT JOIN boxes ON trainees_clases.box_id = boxes.id
+            LEFT JOIN clases ON trainees_clases.clase_id = clases.id
+            LEFT JOIN clases_types ON clases.clase_type_id = clases_types.id
+            LEFT JOIN users_profiles ON trainees.id = users_profiles.trainee_id
+            LEFT JOIN users ON users_profiles.user_id = users.id
+        WHERE 
+            trainees_clases.type = 'PROOFCLASS'
+            AND trainees_clases.status = 'PRESENT'
+    )
+    SELECT
+        DATE AS Proof_class_date,
+        TIME AS Hora,
+        trainee_name AS Alumno,
+        dni,
+        box_name AS Sucursal_proof_class
+    FROM 
+        RankedTrainees
+    WHERE 
+        RowNum = 1
+) t3
+ON t1.dni=t3.dni
+ORDER BY Created DESC;
