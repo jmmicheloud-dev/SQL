@@ -1,0 +1,35 @@
+Cuán probable es que recomiendes BriskBox a un amigo, familiar o compañero del trabajo
+
+-- database
+
+INSERT INTO users_surveys_copy (
+				id
+				,user_id
+				,survey_id
+				,trainee_clase_id
+				,datetime 
+				,status
+				,created
+				,modified)
+SELECT 
+      UUID() AS nuevo_uuid
+      ,a.u_id as user_id
+		,'2ea5a8e4-0e41-4b6b-88d3-6dbe7c1b528c' AS survey_id
+	  	,'' AS trainee_clase_id
+		,'2024-09-04 07:00:00' AS "datetime" 
+		,'PENDING'
+		,'2024-09-04 07:00:00' AS created
+		,'2024-09-04 07:00:00' AS modified
+   FROM (SELECT distinct t.name, u.id AS u_id
+			FROM trainees t
+			INNER JOIN users_profiles up ON  up.trainee_id = t.id
+			INNER JOIN users u ON u.id = up.user_id
+			
+			WHERE t.credits >=1
+			AND t.`status` = 'ACTIVE' 
+			AND t.credits_expiration_date > '2024-09-02'
+			AND t.last_purchase > '2023-09-02'
+			AND  t.`type` = 'REGULAR'
+			AND u.`status` = 'ACTIVE'
+			) a;
+
