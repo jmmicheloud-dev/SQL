@@ -1,6 +1,8 @@
  /* create or replace table v_ocupacion */
  /* insert into v_ocupacion */
-      select date_format(c.date,'%a') dia,
+     
+
+select date_format(c.date,'%a') dia,
                     c.date fecha,
                     b.name box,
                     ct.name tipo_clase,
@@ -9,8 +11,9 @@
                     nvl(trainees_clases_present.count,0) cantidad_presentes,
                     nvl(trainees_clases_absent.count,0) cantidad_ausentes,
                     nvl(trainees_clases_uninscribed.count,0) cantidad_desinscriptos,
-                    round(nvl(trainees_clases_present.count,0)/c.quota,2) ocupacion,
-                    round(nvl(trainees_clases_present.count,0)/(nvl(trainees_clases_present.count,0)+nvl(trainees_clases_absent.count,0)),2) presentismo
+                   -- round(nvl(trainees_clases_present.count,0)/c.quota,2) ocupacion,
+                    round(nvl(trainees_clases_present.count,0)/NVL(NULLIF(c.quota, 0), 1)) ocupacion,
+						  round(nvl(trainees_clases_present.count,0)/(nvl(trainees_clases_present.count,0)+nvl(trainees_clases_absent.count,0)),2) presentismo
       from (select distinct 
                         c.id,
                         c.box_id,
@@ -22,7 +25,7 @@
                         clases c 
                 where tc.clase_id = c.id 
                 and c.status='ACTIVE'
-                and tc.date='2024-02-20'
+                and tc.date='2024-10-14'
 				) c
       left join boxes b on c.box_id = b.id
       left join clases_types ct on c.clase_type_id = ct.id
@@ -51,10 +54,12 @@
             	   group by tc.clase_id, tc.date
             		)	trainees_clases_uninscribed on trainees_clases_uninscribed.clase_id = c.id and trainees_clases_uninscribed.date = c.date
       where trainees_clases_present.count is not null
-         AND b.name ='Cerro'
-         AND ct.name  ='BriskBox X'
+        -- AND b.name ='Cerro'
+        -- AND ct.name  ='BriskBox X'
       order by 
                     c.date ,
                     b.name ,
                     ct.name ,
                     c.time
+
+               
