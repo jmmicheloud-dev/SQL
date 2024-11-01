@@ -1,0 +1,104 @@
+yo lo correria los lunes. serian 4 al mes.
+crontab -e
+0 10 * * 1 /path/to/php /path/to/your/app/bin/cake send_reminders
+
+// src/Command/SendRemindersCommand.php
+namespace App\Command;
+
+use Cake\Console\Command;
+use Cake\Console\Arguments;
+use Cake\Console\ConsoleIo;
+use Cake\Datasource\ConnectionManager;
+
+namespace App\Shell;
+
+use Cake\Console\Shell;
+use App\Model\Entity\Trainee;
+use App\Model\Entity\Push;
+use Cake\ORM\TableRegistry;
+use Cake\I18n\Date;
+use Cake\I18n\Time;
+use Psr\Log\LogLevel;
+
+
+class TraineesReminderShell extends Shell
+{
+public function main()
+{
+$Trainees = TableRegistry::get('Trainees');
+
+$today = Time::now();
+$tomorrow = $today->modify('+1 day');
+
+$trainees = $Trainees->find('all', [
+'contain' => ['UsersProfiles' => ['Users']],
+'conditions' => [
+'Trainees.status' => Trainee::$STATUS_ACTIVE ,
+'Trainees.type' => Trainee::$TYPE_REGULAR,
+'Trainees.credits >' => 0,
+'Trainees.credits_expiration_date >' => $tomorrow,
+'DATEDIFF(NOW(), Trainees.last_consumption) >=' => 10
+]
+]);
+
+$this->log('Trainees a recordar: ' . $trainees->count());
+
+foreach ($trainees as $trainee) {
+Push::sendMessajeToUser($trainee->user->id, 'Te Extrañamos', $trainee->user->first_name . ', Hace mucho no sabemos nada de vos! Recarga tu energía entrenando en Briskbox! Te esperamos!. No olvides utilizarlos antes de su fecha de vencimiento: ' . $trainee->credits_expiration_date->format('Y-m-d') . '.');
+}
+}
+}
+
+
+<!-- Mensaje:
+‘Hace mucho no sabemos nada de vos! Recarga tu energía entrenando en Briskbox! Te esperamos!’
+Segmentación : clientes que no entrenan hace dos semanas o más con créditos activos. -->
+
+//
+//<?php
+//
+//namespace App\Shell;
+//
+//use Cake\Console\Shell;
+//use App\Model\Entity\TraineesClase;
+//use App\Model\Entity\Push;
+//use Cake\ORM\TableRegistry;
+//use Cake\I18n\Date;
+//use Cake\I18n\Time;
+//use Psr\Log\LogLevel;
+//
+//class TraineesClasesReminderShell extends Shell
+//{
+//    public function main()
+//    {
+//        $TraineesClases = TableRegistry::get('TraineesClases');
+//
+//        $this->log('Inicio recordatorio de inscripciones', LogLevel::INFO);
+//        $this->log('Obteniendo clases de alumnos recordar', LogLevel::INFO);
+//
+//        $trainees_clases = $TraineesClases->find('all', [
+//            'contain' => ['Clases' => ['ClasesTypes', 'Boxes'], 'Trainees' => ['UsersProfiles' => ['Users']]],
+//           'conditions' => ['Trainees.id in' => ['4c4e3bfd-0640-473b-9850-f5905294fa1a', '116aaa8c-3e09-4ebb-9b11-dd57bd30be94'],
+//                'TraineesClases.date <= ' => Date::now(),
+// 'TraineesClases.status' => TraineesClase::$STATUS_INSCRIBED
+//            ]
+//        ]);
+//        $this->log('Clases de alumnos a recordar: ' . $trainees_clases->count(), LogLevel::INFO);
+//
+//        $reminders = 0;
+//        foreach ($trainees_clases as $trainee_clase) {
+//            $from_datetime = Time::createFromFormat('Y-m-d H:i', date_format($trainee_clase->date, 'Y-m-d') . ' ' . date_format($trainee_clase->clase->time, 'H:i'));
+//            $from_datetime->modify('-1 hour');
+//            $from_datetime->modify('-1 minute');
+//            $to_datetime = Time::createFromFormat('Y-m-d H:i', date_format($trainee_clase->date, 'Y-m-d') . ' ' . date_format($trainee_clase->clase->time, 'H:i'));
+//            if ($from_datetime < Time::now() && $to_datetime > Time::now()) {
+//               $reminders++;
+//              echo Push::sendMessajeToUser($trainee_clase->trainee->user->id, 'Recordatorio de clase', $trainee_clase->trainee->user->first_name . ', te esperamos para la clase de ' . $trainee_clase->clase->clases_type->name . ' en el box de ' . $trainee_clase->clase->box->name . ' a las ' . date_format($trainee_clase->clase->time, 'H:i') . '. En caso de no asistir, te pedimos porfa te desinscribas asi liberas el cupo para otros alumnos. Muchas gracias!');
+//            }
+//        }
+//        $this->log('Clases de alumnos recordadas: ' . $reminders, LogLevel::INFO);
+//
+//        $this->log('Fin recordatorio de clases de alumnos', LogLevel::INFO);
+//    }
+//}
+// 

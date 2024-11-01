@@ -1,0 +1,539 @@
+// StatisticsShell.php
+
+<?php
+
+namespace App\Shell;
+
+use Cake\Console\Shell;
+use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
+use Cake\I18n\Time;
+use Cake\I18n\Date;
+use Psr\Log\LogLevel;
+use App\Model\Entity\TransactionType;
+use Cake\Utility\Text;
+use Cake\Mailer\Email;
+use App\Utilities;
+
+class StatisticsShell extends Shell
+{
+    private $conection;
+
+    public function main($date = null)
+    {
+        if (!$date) {
+            $date = Date::now()->subDay(1)->format('Y-m-d');
+        }
+
+        $this->log('Inicio estadisticas ' . $date, LogLevel::INFO);
+
+        $this->log('Abrir conexion', LogLevel::INFO);
+        $this->conection = ConnectionManager::get('default');
+
+            if (Date::createFromFormat('Y-m-d', $date)->format('d') == 25) {
+                 $this->generateTraineeStatBoxMonth($date);
+                 $this->generateTraineeStatMonth($date);
+
+        // while (true) {
+            $this->generateOcupation($date);
+            $this->generateNoOcupation($date);
+
+
+
+
+        //     if (Date::createFromFormat('Y-m-d', $date)->format('d') == 25) {
+        //         $this->generateRenovation($date);
+        //     }
+        //     if ($date == Date::now()->subDay(1)->format('Y-m-d')) {
+        //         break;
+        //     }
+        //     $date = Date::createFromFormat('Y-m-d', $date)->addDay(1)->format('Y-m-d');
+        // }
+
+        // $this->generateFutureRenovation();
+        // $this->generateExpiredMedicForm();
+        // $this->generateTrainees();
+        // $this->generateSales();
+        // $this->generateConversions();
+        $this->patchTraineesClases();
+
+        $this->log('Fin estadisticas', LogLevel::INFO);
+    }
+
+    private function generateOcupation($date)
+    {
+
+        $this->log('Inicio generar ocupacion ' . $date, LogLevel::INFO);
+
+        $sql = "insert into v_ocupacion
+                select date_format(c.date,'%a') dia,
+                    c.date fecha,
+                    b.name box,
+                    ct.name tipo_clase,
+                    c.time hora_clase,
+                    c.quota cupo_clase,
+                    nvl(trainees_clases_present.count,0) cantidad_presentes,
+                    nvl(trainees_clases_absent.count,0) cantidad_ausentes,
+                    nvl(trainees_clases_uninscribed.count,0) cantidad_desinscriptos,
+                    round(nvl(trainees_clases_present.count,0)/nvl(c.quota,1),2) ocupacion,
+                    round(nvl(trainees_clases_present.count,0)/(nvl(trainees_clases_present.count,0)+nvl(trainees_clases_absent.count,0)),2) presentismo
+            from (select distinct 
+                        c.id,
+                        c.box_id,
+                        c.clase_type_id,
+                        c.time,
+                        c.quota,
+                        tc.date
+                from trainees_clases tc, 
+                        clases c 
+                where tc.clase_id = c.id 
+                and c.status='ACTIVE'
+                and tc.date='$date') c
+            inner join boxes b on c.box_id = b.id
+            inner join clases_types ct on c.clase_type_id = ct.id
+            left join (
+            select tc.clase_id, 
+                    tc.date,
+                    count(1) count 
+                from trainees_clases tc 
+                where tc.status = 'PRESENT'
+                group by tc.clase_id, tc.date
+            ) 		trainees_clases_present on trainees_clases_present.clase_id = c.id and trainees_clases_present.date = c.date
+            left join (
+            select tc.clase_id, 
+                    tc.date,
+                    count(1) count 
+                from trainees_clases tc 
+                where tc.status = 'ABSENT'
+                group by tc.clase_id, tc.date
+            ) trainees_clases_absent on trainees_clases_absent.clase_id = c.id and trainees_clases_absent.date = c.date
+            left join (
+            select tc.clase_id, 
+                    tc.date,
+                    count(1) count 
+                from trainees_clases tc 
+                where tc.status = 'UNINSCRIBED'
+                group by tc.clase_id, tc.date
+            ) trainees_clases_uninscribed on trainees_clases_uninscribed.clase_id = c.id and trainees_clases_uninscribed.date = c.date
+            where trainees_clases_present.count is not null
+            order by 
+                    c.date ,
+                    b.name ,
+                    ct.name ,
+                    c.time";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar ocupacion ' . $date, LogLevel::INFO);
+    }
+
+    private function generateNoOcupation($date)
+    {
+
+        $this->log('Inicio generar NO ocupacion ' . $date, LogLevel::INFO);
+
+        $sql = "insert into v_ocupacion
+                select  distinct date_format('$date','%a') dia,
+                '$date' fecha,
+                b.name box,
+                ct.name tipo_clase,
+                c.time hora_clase,
+                c.quota cupo_clase,
+                0 cantidad_presentes,
+                0 cantidad_ausentes,
+                0 cantidad_desinscriptos,
+                0 ocupacion,
+                0 presentismo
+        from clases c, 
+            boxes b, 
+            clases_types ct
+        where c.clase_type_id = ct.id
+        and c.box_id = b.id
+        and c.status='ACTIVE'
+        and ct.status='ÁCTIVE'
+        and ct.mode='PRESENTIAL'
+        and c.day=date_format('$date','%w')
+        and c.id not in (select clase_id from trainees_clases where date='$date' and status='PRESENT')";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar NO ocupacion ' . $date, LogLevel::INFO);
+    }
+
+    private function generateRenovation($from_date)
+    {
+        $to_date = Date::createFromFormat('Y-m-d', $from_date)->addMonth(1)->format('Y-m-d');
+        $month = Date::createFromFormat('Y-m-d', $from_date)->format('m');
+        $year = Date::createFromFormat('Y-m-d', $from_date)->format('Y');
+        $this->log('Inicio generar renovacion desde ' . $from_date . ' hasta ' . $to_date, LogLevel::INFO);
+
+        $sql = "insert into v_renovacion
+                select $year,
+                    $month,
+                    b.name box,
+                    tc.name tipo_plan,
+                    trainees_expired_credits.count planes_vencidos,
+                    nvl(trainees_renewed_credits.count,0) renovaciones,
+                    round(nvl(trainees_renewed_credits.count,0) /trainees_expired_credits.count,2) tasa_renovacion
+                from boxes b
+                inner join credits_types tc
+                inner join (
+                    select tc.box_id,
+                            tc.credit_type_id,
+                            count(*) count
+                    from trainees_credits tc
+                    where tc.expiration_date between '$from_date' and '$to_date'
+                    and status='INACTIVE'
+                    group by tc.box_id, tc.credit_type_id
+                ) trainees_expired_credits on trainees_expired_credits.box_id = b.id and trainees_expired_credits.credit_type_id = tc.id
+                left join (
+                    select tc.box_id,
+                            tc.credit_type_id,
+                            count(*) count
+                    from trainees_credits tc
+                    where tc.expiration_date between '$from_date' and '$to_date'
+                    and status in ('ACTIVE','INACTIVE')
+                    and tc.trainee_id in (
+                                select trainee_id
+                        from trainees_credits
+                            where expiration_date between '$from_date' and '$to_date'
+                        and status='INACTIVE'
+                    )
+                    and tc.datetime > (
+                                select expiration_date
+                        from trainees_credits
+                    where tc.expiration_date between '$from_date' and '$to_date'
+                            and  trainee_id=tc.trainee_id
+                                and status='INACTIVE'
+                                limit 1
+                    )
+                    group by tc.box_id,
+                            tc.credit_type_id
+                ) trainees_renewed_credits on trainees_renewed_credits.box_id = b.id and trainees_renewed_credits.credit_type_id = tc.id
+                where b.status='ACTIVE'
+                and tc.status='ACTIVE'
+                order by b.name, tc.name";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar renovacion desde ' . $from_date . ' hasta ' . $to_date, LogLevel::INFO);
+    }
+
+    private function generateFutureRenovation()
+    {
+        $this->log('Inicio generar renovacion a futuro', LogLevel::INFO);
+
+        $sql = "truncate table v_renovacion_futuro";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_renovacion_futuro
+                    select distinct year(t.credits_expiration_date) año,
+                    month(t.credits_expiration_date) mes,
+                    b.name box,
+                    t.name alumno,	   
+                    tc.name tipo_plan,
+                    p.name forma_pago,
+                    t.last_purchase fecha_compra,
+                    t.credits_expiration_date fecha_expiracion,
+                    t.credits creditos,
+                    'ACTIVO' estado_creditos,
+                    b.id box_id,
+                    t.id trainee_id,
+                    tc.id credit_type_id,
+                    p.id payment_id
+            from trainees t, boxes b, credits_types tc,payments p, trainees_credits c
+            where t.box_id=b.id
+            and   t.status='ACTIVE'
+            and   t.credits_expiration_date > now()
+            and   t.payment_id =p.id
+            and   c.trainee_id=t.id
+            and   c.status='ACTIVE'
+            and   c.credit_type_id=tc.id
+            union 
+            select distinct year(now()) año,
+                    month(now()) mes,
+                    b.name box,
+                    t.name alumno,	   
+                    tc.name tipo_plan,
+                    p.name forma_pago,
+                    t.last_purchase fecha_compra,
+                    t.credits_expiration_date fecha_expiracion,
+                    t.credits creditos,
+                    'BLOQUEADO' estado_creditos,
+                    b.id box_id,
+                    t.id trainee_id,
+                    tc.id credit_type_id,
+                    p.id payment_id
+            from trainees t, boxes b, credits_types tc,payments p, trainees_credits c
+            where t.box_id=b.id
+            and   t.status='ACTIVE'
+            and   t.credits_expiration_date > now()
+            and   t.payment_id =p.id
+            and   t.credits = 0
+            and   c.trainee_id=t.id
+            and   c.status='BLOCKED'
+            and   c.credit_type_id=tc.id
+            order by 1,2,3,4";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar renovacion a futuro', LogLevel::INFO);
+    }
+
+    private function generateExpiredMedicForm()
+    {
+        $this->log('Inicio generar fichas medicas a vencer', LogLevel::INFO);
+
+        $sql = "truncate table v_fichas_medicas_a_vencer";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_fichas_medicas_a_vencer
+                    select b.name box,
+                        year(medic_form_expiration_date) año, 
+                        month(medic_form_expiration_date) mes, 
+                        t.name alumno,
+                        u.dni,
+                        u.cellular,
+                        u.email,
+                        t.medic_form_expiration_date fecha_vto
+                    from trainees t, boxes b, users u, users_profiles up
+                    where t.box_id=b.id
+                    and medic_form_expiration_date > now()
+                    and t.id=up.trainee_id
+                    and u.id=up.user_id
+                    and up.type='TRAINEE'
+                    and t.status='ACTIVE'
+                    and u.status='ACTIVE'
+                    order by 1,2,3,4";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar fichas medicas a vencer', LogLevel::INFO);
+    }
+
+    private function generateTrainees()
+    {
+        $this->log('Inicio generar v_alumnos', LogLevel::INFO);
+
+        $sql = "delete from v_alumnos";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_alumnos
+                    SELECT boxes.name AS Box,
+                    trainees.name AS Alumno,
+                    trainees.credits AS Cantidad_de_creditos,
+                    trainees.class_count AS Cantidad_de_clases,
+                    users.email AS Email,
+                    users.dni AS DNI,
+                    users.cellular AS Celular,
+                    users.sex AS Sexo,
+                    users.birthday AS Fecha_Nacimiento,
+                    users.adress AS Direccion,
+                    users.neighborhood AS Barrio,
+                    users.city AS Ciudad,
+                    trainees.created AS Fecha_de_alta_en_el_sistema,
+                    trainees.medic_form_expiration_date AS Fecha_de_Ficha_Médica,
+                    trainees.last_purchase AS Fecha_de_último_consumo,
+                    trainees.last_action AS Fecha_de_última_acción,
+                    trainees.last_consumption AS Fecha_de_última_clase,
+                    ta.datetime AS Fecha_Última_acción,
+                    ta.description AS Última_acción,
+                    ta.cantidad AS Cantidad_acciones
+                FROM trainees trainees
+                INNER JOIN boxes ON trainees.box_id = boxes.id
+                INNER JOIN users_profiles ON users_profiles.trainee_id = trainees.id
+                INNER JOIN users ON users_profiles.user_id = users.id
+                left JOIN (
+                        SELECT ta.*,count(1) cantidad from trainees_actions ta 
+                        GROUP BY ta.trainee_id 
+                        ORDER BY ta.datetime DESC 
+                        ) ta ON ta.trainee_id=trainees.id	 
+                WHERE trainees.status = 'ACTIVE'
+                AND   users.status = 'ACTIVE'
+                AND   users.status = 'ACTIVE'
+                AND   users_profiles.status = 'ACTIVE'";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar v_alumnos', LogLevel::INFO);
+    }
+
+    private function generateSales()
+    {
+        $this->log('Inicio generar v_ventas ultimos 2 meses ', LogLevel::INFO);
+
+        $sql = "delete from v_ventas where Sale_date > DATE_SUB(curdate(), INTERVAL 2 MONTH)";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_ventas
+            SELECT
+            t_u.dni,
+            t_u.Created,
+            t.datetime Sale_date,
+            t.name Alumno,
+            b.name Sucursal_vendida,
+            crtr.name Plan_vendido,
+            i.name Item,
+            trcd.expiration_date Expiration_date,
+            t.discount Descuento_Bonificacion,
+            t.amount Importe,
+            tt.name Tipo_de_transaccion,
+            t.description Detalle,
+            pay.name Forma_de_Pago,
+            tt.name transaction_name,
+            u.name Recepcionista
+            FROM transactions t
+            LEFT JOIN users u ON u.id=t.user_id
+            LEFT JOIN transaction_types tt ON tt.id=t.transaction_type_id
+            LEFT JOIN trainees_credits trcd ON trcd.transaction_id=t.id
+            LEFT JOIN trainees trn ON trn.id=trcd.trainee_id
+            LEFT JOIN transactions_items trit ON trit.transaction_id=t.id
+            LEFT JOIN items i ON i.id=trit.item_id
+            LEFT JOIN boxes b ON t.box_id=b.id
+            LEFT JOIN credits_types crtr ON trcd.credit_type_id=crtr.id
+            LEFT JOIN transactions_payments trpy ON trcd.transaction_id=trpy.transaction_id
+            LEFT JOIN payments pay ON trpy.payment_id=pay.id
+            LEFT JOIN users t_u ON t_u.name=t.name
+            WHERE t.`status` = 'ACTIVE'
+            AND t.datetime > DATE_SUB(curdate(), INTERVAL 2 MONTH)
+            AND tt.`type` != 'cashbox'";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "truncate v_ventas2";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_ventas2
+            SELECT
+                *,
+                LEAD(Sale_date) OVER (PARTITION BY dni ORDER BY Sale_date) AS NextSaleDate,
+                LEAD(Sucursal_vendida) OVER (PARTITION BY dni ORDER BY Sale_date) AS NextSucursal,
+                LEAD(Plan_vendido) OVER (PARTITION BY dni ORDER BY Sale_date) AS NextPlan
+            FROM
+                v_ventas
+            WHERE (Tipo_de_transaccion = 'Venta Consumidor final' OR Tipo_de_transaccion = 'Venta Responsable inscripto' OR Tipo_de_transaccion = 'Nota de crédito consumidor final' OR Tipo_de_transaccion = 'Nota de crédito responsable inscripto')
+            AND (Item = 'Venta de creditos  mes a mes' or Item = 'Venta de créditos debito automático' or Item = 'Venta de créditos plan de cuotas')
+            AND (Sucursal_vendida <> 'Aldea de Valle' OR Sucursal_vendida <> 'Aldea de Urca - Club La Tablada' OR Sucursal_vendida <> 'BriskBox Academy')";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar v_ventas ultimos 2 meses', LogLevel::INFO);
+    }
+
+    private function generateConversions()
+    {
+        $this->log('Inicio generar v_conversiones', LogLevel::INFO);
+
+        $sql = "truncate table v_conversiones";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_conversiones 
+                WITH RankedTransactions AS (
+                    SELECT *, ROW_NUMBER() OVER (PARTITION BY v_ventas.dni ORDER BY Sale_date) AS row_num
+                    FROM v_ventas
+                )
+                SELECT 
+                    dni AS DNI, 
+                    Sucursal_vendida AS sucursal, 
+                    Alumno AS Alumno,
+                    transaction_name AS Tipo,
+                    sale_date AS sale_date,
+                    Created
+                FROM
+                    RankedTransactions
+                WHERE row_num = 1 AND (transaction_name = 'Venta Consumidor Final' OR transaction_name = 'Venta Responsable Inscripto')";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar v_conversiones', LogLevel::INFO);
+    }
+
+
+    private function patchTraineesClases()
+    {
+        $this->log('Inicio patchTraineesClases', LogLevel::INFO);
+
+        $sql = "insert into trainees_clases_type (id,trainee_id,clase_type_id,quantity,created,modified) 
+            select uuid(),t.id,c.id,0,now(),now() 
+            from trainees t, clases_types c 
+            where (t.id,c.id) not in (select trainee_id,clase_type_id from trainees_clases_type)
+            and t.status='ACTIVE'
+            and c.status='ACTIVE'";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin patchTraineesClases', LogLevel::INFO);
+    }
+
+private function generateTraineeStatBoxMonth($date)
+    {
+
+        $this->log('Inicio generar traineeStatBoxMonth', LogLevel::INFO);
+
+
+        $sql = "DELETE FROM trainees_statistics_boxes_months WHERE month = MONTH('$date')";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "INSERT INTO trainees_statistics_boxes_months SELECT 'MONTH('$date')' AS month, tsb.* FROM trainees_statistics_boxes tsb";
+                   
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar traineeStatBoxMonth', LogLevel::INFO);
+    }
+   
+    private function generateTraineeStatMonth($date)
+    {
+
+        $this->log('Inicio generar traineeStatMonth', LogLevel::INFO);
+
+
+        $sql = "DELETE FROM trainees_statistics_months WHERE month = MONTH('$date')";
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "INSERT INTO trainees_statistics_months SELECT 'MONTH('$date')' AS month, ts.* FROM trainees_statistics ts";
+
+
+                   
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar traineeStatMonth', LogLevel::INFO);
+    }
+
+    private function TEMPLATE($date)
+    {
+
+        $this->log('Inicio generar TEMPLATE', LogLevel::INFO);
+
+
+        $sql = "delete from v_TEMPLATE";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $sql = "insert into v_alumnos
+                select $date";
+
+        $query = $this->conection->prepare($sql);
+        $query->execute();
+
+        $this->log('Fin generar TEMPLATE', LogLevel::INFO);
+    }
+}
