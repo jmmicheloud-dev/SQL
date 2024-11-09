@@ -1,0 +1,29 @@
+
+ -- CREATE VIEW W_tasa_de_uso AS
+
+SELECT DISTINCT 
+	YEAR(trainees_clases.date) AS Año,
+	MONTH(trainees_clases.date) AS Mes,
+	users.dni AS DNI,
+	users.name AS Cliente,
+	boxes.name AS Box,
+	clases_types.name AS Actividad,
+	COUNT(DISTINCT(trainees_clases.id)) AS Cantidad
+	
+FROM trainees_clases
+LEFT JOIN boxes
+ON trainees_clases.box_id=boxes.id
+LEFT JOIN trainees
+ON trainees_clases.trainee_id=trainees.id
+LEFT JOIN users_profiles
+ON trainees.id=users_profiles.trainee_id
+LEFT JOIN users
+ON users_profiles.user_id=users.id
+LEFT JOIN clases
+ON trainees_clases.clase_id=clases.id
+LEFT JOIN clases_types
+ON clases.clase_type_id=clases_types.id
+WHERE trainees_clases.`status`="PRESENT"
+AND trainees_clases.date > "2023-12-31"
+GROUP BY YEAR(trainees_clases.date),MONTH(trainees_clases.date), users.dni, clases_types.name
+ORDER BY users.dni;
