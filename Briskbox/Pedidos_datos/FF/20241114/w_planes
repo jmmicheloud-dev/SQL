@@ -1,0 +1,18 @@
+-- listado de planes por profesor y alumno
+-- 
+ -- CREATE VIEW w_planes AS
+SELECT 
+		w.date AS Fecha,
+		ct.name AS Actividad,
+		w.description AS Plan,
+		us.name AS Coach,
+		tr.name AS Cliente,
+		w.`status` AS Estado,
+		w.created,
+		w.modified
+FROM 
+		wods w
+LEFT JOIN clases_types ct ON w.clase_type_id = ct.id
+LEFT JOIN users us ON w.user_id = us.id
+LEFT JOIN trainees tr ON w.trainee_id = tr.id
+ORDER BY w.date DESC;

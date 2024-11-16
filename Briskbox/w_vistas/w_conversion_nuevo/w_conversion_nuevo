@@ -10,9 +10,11 @@ WITH Numerado AS (
         t1.`type`,
         ROW_NUMBER() OVER (PARTITION BY t1.dni ORDER BY t1.Fecha ASC) AS rn,
         CASE 
-            WHEN t1.Plan_vendido = 'Credito de cortesia' THEN NULL
+            WHEN t1.Plan_vendido IN ('Credito de cortesia', 'Tarjeta 1 semana Gratis') THEN NULL
             ELSE 
-                ROW_NUMBER() OVER (PARTITION BY t1.dni, CASE WHEN t1.Plan_vendido <> 'Credito de cortesia' THEN t1.dni ELSE NULL END ORDER BY t1.Fecha ASC)
+                ROW_NUMBER() OVER (PARTITION BY t1.dni, 
+                    CASE WHEN t1.Plan_vendido NOT IN ('Credito de cortesia', 'Tarjeta 1 semana Gratis') 
+                    THEN t1.dni ELSE NULL END ORDER BY t1.Fecha ASC)
         END AS rn_corrected
     FROM 
     (
